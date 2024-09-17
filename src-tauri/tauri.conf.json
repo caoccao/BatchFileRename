@@ -12,9 +12,27 @@
   "tauri": {
     "allowlist": {
       "all": false,
+      "clipboard": {
+        "all": true
+      },
       "shell": {
-        "all": false,
-        "open": true
+        "all": false
+      },
+      "fs": {
+        "all": true,
+        "scope": ["*"]
+      },
+      "os": {
+        "all": true
+      },
+      "dialog": {
+        "all": true
+      },
+      "globalShortcut": {
+        "all": true
+      },
+      "window": {
+        "all": true
       }
     },
     "windows": [
@@ -26,6 +44,17 @@
         "minHeight": 400
       }
     ],
+    "cli": {
+      "description": "Batch File Rename",
+      "longDescription": "A batch file rename GUI application with split view for both source and target files.",
+      "args": [
+        {
+          "name": "fileOrDirectory",
+          "index": 1,
+          "takesValue": true
+        }
+      ]
+    },
     "security": {
       "csp": null
     },

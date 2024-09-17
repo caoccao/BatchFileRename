@@ -1,8 +1,13 @@
-import { invoke } from "@tauri-apps/api/tauri";
 import "@fontsource/roboto/300.css";
 import "@fontsource/roboto/400.css";
 import "@fontsource/roboto/500.css";
 import "@fontsource/roboto/700.css";
+
+import { appWindow } from "@tauri-apps/api/window";
+import { invoke } from "@tauri-apps/api/tauri";
+import type { Event, UnlistenFn } from "@tauri-apps/api/event";
+import type { FileDropEvent } from "@tauri-apps/api/window";
+
 import React from "react";
 import Box from "@mui/material/Box";
 import Tabs from "@mui/material/Tabs";
@@ -17,6 +22,25 @@ function App() {
   ) => {
     setTabIndex(newTabIndex);
   };
+
+  React.useEffect(() => {
+    let cancelFileDrop: UnlistenFn | null = null;
+    appWindow
+      .onFileDropEvent((event: Event<FileDropEvent>) => {
+        if (event.payload.type === "drop") {
+          console.log(event.payload.paths);
+        }
+      })
+      .then((value) => {
+        cancelFileDrop = value;
+      });
+    return () => {
+      if (cancelFileDrop) {
+        cancelFileDrop();
+      }
+    };
+  }, []);
+
   return (
     <Box sx={{ width: "100%" }}>
       <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
