@@ -10,10 +10,18 @@ import type { FileDropEvent } from "@tauri-apps/api/window";
 
 import React from "react";
 import Box from "@mui/material/Box";
+import Container from "@mui/material/Container";
+import Link from "@mui/material/Link";
 import Tabs from "@mui/material/Tabs";
 import Tab from "@mui/material/Tab";
+import Typography from "@mui/material/Typography";
+
+import Unified from "./Unified";
 
 function App() {
+  const [sourceFiles, setSourceFiles] = React.useState<string[]>([]);
+  const [targetFiles, setTargetFiles] = React.useState<string[]>([]);
+
   const [tabIndex, setTabIndex] = React.useState(0);
 
   const onChangeTabIndex = (
@@ -28,7 +36,9 @@ function App() {
     appWindow
       .onFileDropEvent((event: Event<FileDropEvent>) => {
         if (event.payload.type === "drop") {
-          console.log(event.payload.paths);
+          const files = event.payload.paths;
+          setSourceFiles(files);
+          setTargetFiles([...files]);
         }
       })
       .then((value) => {
@@ -43,7 +53,7 @@ function App() {
 
   return (
     <Box sx={{ width: "100%" }}>
-      <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
+      <Box sx={{ borderBottom: 1, borderColor: "divider", mb: "5px" }}>
         <Tabs
           value={tabIndex}
           onChange={onChangeTabIndex}
@@ -80,7 +90,7 @@ function App() {
         aria-labelledby="tab-control-unified"
         hidden={tabIndex !== 0}
       >
-        Unified View
+        <Unified sourceFiles={sourceFiles} targetFiles={targetFiles} />
       </div>
       <div
         id="tab-id-source"
@@ -103,6 +113,35 @@ function App() {
       >
         Settings
       </div>
+      <Container sx={{ mt: "10px", textAlign: "center" }}>
+        <Box component="footer">
+          <Typography variant="body2" sx={{ margin: "0.5em" }}>
+            <Link
+              href="https://paypal.me/caoccao?locale.x=en_US"
+              target="_blank"
+            >
+              Donate to Support the Development
+            </Link>
+          </Typography>
+          <Typography variant="body2" sx={{ margin: "0.5em" }}>
+            © Copyright 2024
+            <Link
+              href="https://github.com/caoccao"
+              target="_blank"
+              sx={{ ml: "0.5em" }}
+            >
+              Sam Cao
+            </Link>
+            <Link
+              href="https://www.caoccao.com/"
+              target="_blank"
+              sx={{ ml: "0.5em" }}
+            >
+              caoccao.com
+            </Link>
+          </Typography>
+        </Box>
+      </Container>
     </Box>
   );
 }
