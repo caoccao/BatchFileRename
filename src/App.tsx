@@ -132,7 +132,11 @@ function App() {
         aria-labelledby="tab-control-target"
         hidden={tabIndex !== 2}
       >
-        <BatchEditor items={items} type={BatchEditorType.Target} />
+        <BatchEditor
+          items={items}
+          setItems={setItems}
+          type={BatchEditorType.Target}
+        />
       </div>
       <div
         id="tab-id-settings"
