@@ -25,7 +25,7 @@ import TableRow from "@mui/material/TableRow";
 import Paper from "@mui/material/Paper";
 
 import ItemTypeIcon from "./ItemTypeIcon";
-import type { Item } from "./lib/Protocol";
+import { Item } from "./lib/Protocol";
 
 export interface Args {
   items: Item[];

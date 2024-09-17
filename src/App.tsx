@@ -30,9 +30,10 @@ import Box from "@mui/material/Box";
 import Tabs from "@mui/material/Tabs";
 import Tab from "@mui/material/Tab";
 
+import { BatchEditorType, Item, ItemType } from "./lib/Protocol";
+
+import BatchEditor from "./BatchEditor";
 import Footer from "./Footer";
-import { ItemType } from "./lib/Protocol";
-import type { Item } from "./lib/Protocol";
 import Unified from "./Unified";
 
 function App() {
@@ -124,14 +125,14 @@ function App() {
         aria-labelledby="tab-control-source"
         hidden={tabIndex !== 1}
       >
-        Source File List
+        <BatchEditor items={items} type={BatchEditorType.Source} />
       </div>
       <div
         id="tab-id-target"
         aria-labelledby="tab-control-target"
         hidden={tabIndex !== 2}
       >
-        Target File List
+        <BatchEditor items={items} type={BatchEditorType.Target} />
       </div>
       <div
         id="tab-id-settings"

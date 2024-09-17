@@ -15,6 +15,11 @@
  *   limitations under the License.
  */
 
+export enum BatchEditorType {
+  Source = 0,
+  Target = 1,
+}
+
 export interface Item {
   sourcePath: string;
   targetPath: string;

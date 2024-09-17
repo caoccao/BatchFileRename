@@ -13,9 +13,12 @@
     "@emotion/react": "^11.13.3",
     "@emotion/styled": "^11.13.0",
     "@fontsource/roboto": "^5.1.0",
+    "@monaco-editor/react": "^4.6.0",
     "@mui/icons-material": "^6.1.0",
     "@mui/material": "^6.1.0",
     "@tauri-apps/api": "^1",
+    "monaco-editor": "^0.51.0",
+    "monaco-vim": "^0.4.1",
     "react": "^18.2.0",
     "react-dom": "^18.2.0"
   },
