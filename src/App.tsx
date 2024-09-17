@@ -1,3 +1,20 @@
+/*
+ *   Copyright (c) 2024. caoccao.com Sam Cao
+ *   All rights reserved.
+
+ *   Licensed under the Apache License, Version 2.0 (the "License");
+ *   you may not use this file except in compliance with the License.
+ *   You may obtain a copy of the License at
+
+ *   http://www.apache.org/licenses/LICENSE-2.0
+
+ *   Unless required by applicable law or agreed to in writing, software
+ *   distributed under the License is distributed on an "AS IS" BASIS,
+ *   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *   See the License for the specific language governing permissions and
+ *   limitations under the License.
+ */
+
 import "@fontsource/roboto/300.css";
 import "@fontsource/roboto/400.css";
 import "@fontsource/roboto/500.css";
@@ -16,11 +33,12 @@ import Tabs from "@mui/material/Tabs";
 import Tab from "@mui/material/Tab";
 import Typography from "@mui/material/Typography";
 
+import { ItemType } from "./lib/Protocol";
+import type { Item } from "./lib/Protocol";
 import Unified from "./Unified";
 
 function App() {
-  const [sourceFiles, setSourceFiles] = React.useState<string[]>([]);
-  const [targetFiles, setTargetFiles] = React.useState<string[]>([]);
+  const [items, setItems] = React.useState<Item[]>([]);
 
   const [tabIndex, setTabIndex] = React.useState(0);
 
@@ -36,9 +54,20 @@ function App() {
     appWindow
       .onFileDropEvent((event: Event<FileDropEvent>) => {
         if (event.payload.type === "drop") {
-          const files = event.payload.paths;
-          setSourceFiles(files);
-          setTargetFiles([...files]);
+          const paths = event.payload.paths;
+          const newItems = paths.map((path) => ({
+            sourcePath: path,
+            targetPath: path,
+            type: ItemType.Unknown,
+          }));
+          setItems(newItems);
+          invoke<Item[]>("scan_items", { items: newItems })
+            .then((value) => {
+              setItems(value);
+            })
+            .catch((error) => {
+              console.error(error);
+            });
         }
       })
       .then((value) => {
@@ -90,7 +119,7 @@ function App() {
         aria-labelledby="tab-control-unified"
         hidden={tabIndex !== 0}
       >
-        <Unified sourceFiles={sourceFiles} targetFiles={targetFiles} />
+        <Unified items={items} />
       </div>
       <div
         id="tab-id-source"
