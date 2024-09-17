@@ -27,12 +27,10 @@ import type { FileDropEvent } from "@tauri-apps/api/window";
 
 import React from "react";
 import Box from "@mui/material/Box";
-import Container from "@mui/material/Container";
-import Link from "@mui/material/Link";
 import Tabs from "@mui/material/Tabs";
 import Tab from "@mui/material/Tab";
-import Typography from "@mui/material/Typography";
 
+import Footer from "./Footer";
 import { ItemType } from "./lib/Protocol";
 import type { Item } from "./lib/Protocol";
 import Unified from "./Unified";
@@ -142,35 +140,7 @@ function App() {
       >
         Settings
       </div>
-      <Container sx={{ mt: "10px", textAlign: "center" }}>
-        <Box component="footer">
-          <Typography variant="body2" sx={{ margin: "0.5em" }}>
-            <Link
-              href="https://paypal.me/caoccao?locale.x=en_US"
-              target="_blank"
-            >
-              Donate to Support the Development
-            </Link>
-          </Typography>
-          <Typography variant="body2" sx={{ margin: "0.5em" }}>
-            © Copyright 2024
-            <Link
-              href="https://github.com/caoccao"
-              target="_blank"
-              sx={{ ml: "0.5em" }}
-            >
-              Sam Cao
-            </Link>
-            <Link
-              href="https://www.caoccao.com/"
-              target="_blank"
-              sx={{ ml: "0.5em" }}
-            >
-              caoccao.com
-            </Link>
-          </Typography>
-        </Box>
-      </Container>
+      <Footer />
     </Box>
   );
 }
