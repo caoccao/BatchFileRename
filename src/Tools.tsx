@@ -55,11 +55,36 @@ function NotificationBox(args: { notification: Notification }) {
 }
 
 function Tools(args: Args) {
-  function onClickClear() {
+  const handleClear = React.useCallback(() => {
     args.clear();
-  }
+  }, [args.items, args.notification]);
 
-  const onClickRename = React.useCallback(() => {
+  const handleKeyboardShortcuts = React.useCallback(
+    (event: KeyboardEvent) => {
+      if (
+        !event.altKey &&
+        !event.ctrlKey &&
+        !event.metaKey &&
+        !event.shiftKey
+      ) {
+        switch (event.key) {
+          case "F2":
+            event.preventDefault();
+            handleRename();
+            return;
+          case "F8":
+            event.preventDefault();
+            handleClear();
+            return;
+          default:
+            break;
+        }
+      }
+    },
+    [args.items, args.notification]
+  );
+
+  const handleRename = React.useCallback(() => {
     invoke<number>("rename_items", {
       items: args.items,
     })
@@ -75,7 +100,22 @@ function Tools(args: Args) {
           type: NotificationType.Error,
         });
       });
-  }, [args.items]);
+  }, [args.items, args.notification]);
+
+  const onClickClear = React.useCallback(() => {
+    handleClear();
+  }, [args.items, args.notification]);
+
+  const onClickRename = React.useCallback(() => {
+    handleRename();
+  }, [args.items, args.notification]);
+
+  React.useEffect(() => {
+    document.addEventListener("keydown", handleKeyboardShortcuts);
+    return () => {
+      document.removeEventListener("keydown", handleKeyboardShortcuts);
+    };
+  }, []);
 
   return (
     <Box>
