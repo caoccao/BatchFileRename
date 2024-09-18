@@ -16,13 +16,14 @@
  */
 
 import DescriptionIcon from "@mui/icons-material/Description";
+import NumbersOutlinedIcon from "@mui/icons-material/NumbersOutlined";
+import Paper from "@mui/material/Paper";
 import Table from "@mui/material/Table";
 import TableBody from "@mui/material/TableBody";
 import TableCell from "@mui/material/TableCell";
 import TableContainer from "@mui/material/TableContainer";
 import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
-import Paper from "@mui/material/Paper";
 
 import ItemTypeIcon from "./ItemTypeIcon";
 import { Item } from "./lib/Protocol";
@@ -38,6 +39,9 @@ function Unified(args: Args) {
         <TableHead>
           <TableRow>
             <TableCell align="center" sx={{ width: 24, maxWidth: 24 }}>
+              <NumbersOutlinedIcon />
+            </TableCell>
+            <TableCell align="center" sx={{ width: 24, maxWidth: 24 }}>
               <DescriptionIcon />
             </TableCell>
             <TableCell>Source</TableCell>
@@ -45,8 +49,9 @@ function Unified(args: Args) {
           </TableRow>
         </TableHead>
         <TableBody>
-          {args.items.map((item) => (
+          {args.items.map((item, index) => (
             <TableRow key={item.sourcePath}>
+              <TableCell align="center">{index + 1}</TableCell>
               <TableCell align="center">
                 <ItemTypeIcon type={item.type} />
               </TableCell>

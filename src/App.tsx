@@ -32,8 +32,9 @@ import Tab from "@mui/material/Tab";
 
 import { BatchEditorType, Item, ItemType } from "./lib/Protocol";
 
-import BatchEditor from "./BatchEditor";
 import Footer from "./Footer";
+import SourceEditor from "./SourceEditor";
+import TargetEditor from "./TargetEditor";
 import Unified from "./Unified";
 
 function App() {
@@ -125,18 +126,14 @@ function App() {
         aria-labelledby="tab-control-source"
         hidden={tabIndex !== 1}
       >
-        <BatchEditor items={items} type={BatchEditorType.Source} />
+        <SourceEditor items={items} />
       </div>
       <div
         id="tab-id-target"
         aria-labelledby="tab-control-target"
         hidden={tabIndex !== 2}
       >
-        <BatchEditor
-          items={items}
-          setItems={setItems}
-          type={BatchEditorType.Target}
-        />
+        <TargetEditor items={items} setItems={setItems} />
       </div>
       <div
         id="tab-id-settings"

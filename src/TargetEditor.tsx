@@ -34,10 +34,9 @@ import { BatchEditorType, Item } from "./lib/Protocol";
 export interface Args {
   items: Item[];
   setItems: React.Dispatch<React.SetStateAction<Item[]>>;
-  type: BatchEditorType;
 }
 
-function BatchEditor(args: Args) {
+function TargetEditor(args: Args) {
   const [monacoEditor, setMonacoEditor] =
     React.useState<editor.IStandaloneCodeEditor | null>(null);
   const [vim, setVim] = React.useState<any>(null);
@@ -49,8 +48,8 @@ function BatchEditor(args: Args) {
   ) {
     setMonacoEditor(monacoEditor);
     monacoEditor.addAction({
-      id: `editor-${args.type}`,
-      label: `Editor ${args.type}`,
+      id: `target-editor`,
+      label: `Target Editor`,
       keybindings: [
         monaco.KeyMod.CtrlCmd | monaco.KeyCode.KeyS,
         monaco.KeyMod.WinCtrl | monaco.KeyCode.KeyS,
@@ -64,30 +63,15 @@ function BatchEditor(args: Args) {
           // TODO
           console.error("Error: items length mismatches.");
         } else {
-          switch (args.type) {
-            case BatchEditorType.Source:
-              args.setItems(
-                args.items.map((item, i) => {
-                  return {
-                    sourcePath: lines[i],
-                    targetPath: item.targetPath,
-                    type: item.type,
-                  };
-                })
-              );
-              break;
-            case BatchEditorType.Target:
-              args.setItems(
-                args.items.map((item, i) => {
-                  return {
-                    sourcePath: item.sourcePath,
-                    targetPath: lines[i],
-                    type: item.type,
-                  };
-                })
-              );
-              break;
-          }
+          args.setItems(
+            args.items.map((item, i) => {
+              return {
+                sourcePath: item.sourcePath,
+                targetPath: lines[i],
+                type: item.type,
+              };
+            })
+          );
         }
       },
     });
@@ -95,12 +79,7 @@ function BatchEditor(args: Args) {
 
   function onClickVimMode() {
     if (vim === null) {
-      setVim(
-        initVimMode(
-          monacoEditor,
-          document.querySelector(`.status-node-${args.type}`)
-        )
-      );
+      setVim(initVimMode(monacoEditor, document.querySelector(`.status-node`)));
       setVimMode(true);
     } else {
       vim.dispose();
@@ -141,24 +120,18 @@ function BatchEditor(args: Args) {
         language="plaintext"
         onMount={onMountEditor}
         defaultValue=""
-        value={args.items
-          .map((item) =>
-            args.type === BatchEditorType.Source
-              ? item.sourcePath
-              : item.targetPath
-          )
-          .join("\n")}
+        value={args.items.map((item) => item.targetPath).join("\n")}
         theme="light"
         options={{
           fontSize: 16,
         }}
       />
       <code
-        className={`status-node-${args.type}`}
-        style={{ padding: "3px", backgroundColor: "lightblue", color: "black" }}
+        className={`status-node`}
+        style={{ padding: "3px", backgroundColor: "lightgray", marginTop: "3px", color: "black" }}
       ></code>
     </Box>
   );
 }
 
-export default BatchEditor;
+export default TargetEditor;
