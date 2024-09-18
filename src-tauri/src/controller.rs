@@ -20,7 +20,12 @@ use std::collections::HashSet;
 use std::fs;
 use std::path::Path;
 
+use crate::config;
 use crate::protocol;
+
+pub async fn get_config() -> Result<config::Config> {
+  Ok(config::get_config())
+}
 
 fn recursive_scan_items(
   items: &mut Vec<protocol::Item>,
@@ -117,4 +122,9 @@ pub async fn scan_items(
   };
   new_items.sort_by(|a, b| a.source_path.cmp(&b.source_path));
   Ok(new_items)
+}
+
+pub async fn set_config(config: config::Config) -> Result<config::Config> {
+  config::set_config(config)?;
+  Ok(config::get_config())
 }

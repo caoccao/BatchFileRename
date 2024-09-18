@@ -28,15 +28,23 @@ import type { FileDropEvent } from "@tauri-apps/api/window";
 import React from "react";
 import { Box, Tab, Tabs } from "@mui/material";
 
-import { Item, ItemType, Notification, NotificationType } from "./lib/Protocol";
+import {
+  Config,
+  Item,
+  ItemType,
+  Notification,
+  NotificationType,
+} from "./lib/Protocol";
 
 import Footer from "./Footer";
 import SourceEditor from "./SourceEditor";
+import Settings from "./Settings";
 import TargetEditor from "./TargetEditor";
 import Tools from "./Tools";
 import Unified from "./Unified";
 
 function App() {
+  const [config, setConfig] = React.useState<Config | null>(null);
   const [notification, setNotification] = React.useState<Notification>({
     message: "",
     type: NotificationType.None,
@@ -84,6 +92,16 @@ function App() {
       })
       .then((value) => {
         cancelFileDrop = value;
+      });
+    invoke<Config>("get_config")
+      .then((result) => {
+        setConfig(result);
+      })
+      .catch((error) => {
+        setNotification({
+          message: `${error}`,
+          type: NotificationType.Error,
+        });
       });
     return () => {
       if (cancelFileDrop) {
@@ -154,6 +172,7 @@ function App() {
         hidden={tabIndex !== 0}
       >
         <Unified
+          config={config}
           items={items}
           setItems={setItems}
           setNotification={setNotification}
@@ -182,7 +201,11 @@ function App() {
         aria-labelledby="tab-control-settings"
         hidden={tabIndex !== 3}
       >
-        Settings
+        <Settings
+          config={config}
+          setConfig={setConfig}
+          setNotification={setNotification}
+        />
       </div>
       <Footer />
     </Box>

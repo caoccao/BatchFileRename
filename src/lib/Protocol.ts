@@ -15,6 +15,10 @@
  *   limitations under the License.
  */
 
+export interface Config {
+  extensions: string[];
+}
+
 export interface Item {
   sourcePath: string;
   targetPath: string;

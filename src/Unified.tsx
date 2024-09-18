@@ -26,6 +26,8 @@ import {
 
 import {
   Button,
+  Checkbox,
+  FormControlLabel,
   Paper,
   Stack,
   Table,
@@ -34,25 +36,32 @@ import {
   TableContainer,
   TableHead,
   TableRow,
+  TextField,
   Typography,
 } from "@mui/material";
 
-import { Item, Notification, NotificationType } from "./lib/Protocol";
+import { Config, Item, Notification, NotificationType } from "./lib/Protocol";
 import ItemTypeIcon from "./ItemTypeIcon";
 
 export interface Args {
+  config: Config | null;
   items: Item[];
   setItems: React.Dispatch<React.SetStateAction<Item[]>>;
   setNotification: React.Dispatch<React.SetStateAction<Notification>>;
 }
 
 function Unified(args: Args) {
+  const [depth, setDepth] = React.useState(-1);
+  const [filterByExtensions, setFilterByExtensions] = React.useState(true);
+  const [includeDirectory, setIncludeDirectory] = React.useState(true);
+
   const onClickScan = React.useCallback(() => {
     invoke<Item[]>("scan_items", {
       items: args.items,
-      depth: -1,
-      includeDirectory: true,
-      extensions: [],
+      depth,
+      includeDirectory,
+      extensions:
+        filterByExtensions && args.config ? args.config.extensions : [],
     })
       .then((value) => {
         args.setNotification({
@@ -67,12 +76,28 @@ function Unified(args: Args) {
           type: NotificationType.Error,
         });
       });
-  }, [args.items]);
+  }, [args.items, depth, includeDirectory]);
+
+  function onChangeDepth(event: React.ChangeEvent<HTMLInputElement>) {
+    setDepth(Number(event.target.value));
+  }
+
+  function onChangeFilterByExtensions(
+    _event: React.ChangeEvent<HTMLInputElement>
+  ) {
+    setFilterByExtensions(!filterByExtensions);
+  }
+
+  function onChangeIncludeDirectory(
+    _event: React.ChangeEvent<HTMLInputElement>
+  ) {
+    setIncludeDirectory(!includeDirectory);
+  }
 
   if (args.items.length > 0) {
     return (
       <React.Fragment>
-        <Stack direction="row" spacing={2} sx={{ mb: "5px" }}>
+        <Stack direction="row" spacing={2} sx={{ mt: "10px", mb: "5px" }}>
           <Button
             variant="outlined"
             size="small"
@@ -81,6 +106,33 @@ function Unified(args: Args) {
           >
             Scan
           </Button>
+          <FormControlLabel
+            control={
+              <Checkbox
+                checked={includeDirectory}
+                onChange={onChangeIncludeDirectory}
+              />
+            }
+            label="Include Directory"
+          />
+          <TextField
+            type="number"
+            label="Depth"
+            variant="outlined"
+            value={depth}
+            onChange={onChangeDepth}
+            size="small"
+            sx={{ width: "70px" }}
+          />
+          <FormControlLabel
+            control={
+              <Checkbox
+                checked={filterByExtensions}
+                onChange={onChangeFilterByExtensions}
+              />
+            }
+            label="Filter by Extensions"
+          />
         </Stack>
         <TableContainer component={Paper}>
           <Table size="small">
