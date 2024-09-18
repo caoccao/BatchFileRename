@@ -40,7 +40,6 @@ function TargetEditor(args: Args) {
   const [monacoEditor, setMonacoEditor] =
     React.useState<editor.IStandaloneCodeEditor | null>(null);
   const [vim, setVim] = React.useState<any>(null);
-  const [vimMode, setVimMode] = React.useState(false);
 
   function onMountEditor(
     monacoEditor: editor.IStandaloneCodeEditor,
@@ -80,11 +79,9 @@ function TargetEditor(args: Args) {
   function onClickVimMode() {
     if (vim === null) {
       setVim(initVimMode(monacoEditor, document.querySelector(`.status-node`)));
-      setVimMode(true);
     } else {
       vim.dispose();
       setVim(null);
-      setVimMode(false);
     }
   }
 
@@ -109,7 +106,9 @@ function TargetEditor(args: Args) {
             }}
           >
             <FormControlLabel
-              control={<Checkbox checked={vimMode} onClick={onClickVimMode} />}
+              control={
+                <Checkbox checked={vim !== null} onClick={onClickVimMode} />
+              }
               label="Vim Mode"
             />
           </Tooltip>
