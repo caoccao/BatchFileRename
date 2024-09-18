@@ -15,7 +15,14 @@
  *   limitations under the License.
  */
 
-import { Recycling as RecyclingIcon } from "@mui/icons-material";
+import { invoke } from "@tauri-apps/api/tauri";
+
+import React from "react";
+
+import {
+  Publish as PublishIcon,
+  Recycling as RecyclingIcon,
+} from "@mui/icons-material";
 import { Box, Button, Stack, Tooltip, Typography } from "@mui/material";
 
 import { Item, Notification, NotificationType } from "./lib/Protocol";
@@ -25,6 +32,7 @@ export interface Args {
   items: Item[];
   notification: Notification;
   setItems: React.Dispatch<React.SetStateAction<Item[]>>;
+  setNotification: React.Dispatch<React.SetStateAction<Notification>>;
 }
 
 function NotificationBox(args: { notification: Notification }) {
@@ -51,10 +59,40 @@ function Tools(args: Args) {
     args.clear();
   }
 
+  const onClickRename = React.useCallback(() => {
+    invoke<number>("rename_items", {
+      items: args.items,
+    })
+      .then((value) => {
+        args.setNotification({
+          message: `Renamed ${value} item(s) successfully`,
+          type: NotificationType.Info,
+        });
+      })
+      .catch((error) => {
+        args.setNotification({
+          message: `${error}`,
+          type: NotificationType.Error,
+        });
+      });
+  }, [args.items]);
+
   return (
     <Box>
       <Stack direction="row" spacing={2}>
-        <Tooltip arrow title="Clear">
+        <Tooltip arrow title="Rename (F2)">
+          <Button
+            variant="outlined"
+            startIcon={<PublishIcon />}
+            onClick={onClickRename}
+            size="small"
+            disabled={args.items.length === 0}
+            sx={{ textTransform: "none" }}
+          >
+            Rename
+          </Button>
+        </Tooltip>
+        <Tooltip arrow title="Clear (F8)">
           <Button
             variant="outlined"
             startIcon={<RecyclingIcon />}

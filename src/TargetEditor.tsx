@@ -100,11 +100,7 @@ function TargetEditor(args: Args) {
 
   return (
     <Box sx={{ width: "100%" }}>
-      <Stack
-        direction="row"
-        spacing={2}
-        sx={{ mb: "5px", justifyContent: "center" }}
-      >
+      <Stack direction="row" spacing={2} sx={{ mb: "5px" }}>
         <Button
           variant="outlined"
           size="small"

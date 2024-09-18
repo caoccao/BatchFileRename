@@ -70,7 +70,10 @@ function App() {
               setItems(value);
             })
             .catch((error) => {
-              console.error(error);
+              setNotification({
+                message: `${error}`,
+                type: NotificationType.Error,
+              });
             });
         }
       })
@@ -104,6 +107,7 @@ function App() {
         items={items}
         notification={notification}
         setItems={setItems}
+        setNotification={setNotification}
       />
       <Box sx={{ borderBottom: 1, borderColor: "divider", mb: "5px" }}>
         <Tabs

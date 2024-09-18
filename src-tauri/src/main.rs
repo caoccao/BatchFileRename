@@ -9,6 +9,12 @@ fn convert_error(error: anyhow::Error) -> String {
 }
 
 #[tauri::command]
+async fn rename_items(items: Vec<protocol::Item>) -> Result<usize, String> {
+  log::debug!("rename_items: {:?}", items);
+  controller::rename_items(items).await.map_err(convert_error)
+}
+
+#[tauri::command]
 async fn scan_items(items: Vec<protocol::Item>) -> Result<Vec<protocol::Item>, String> {
   log::debug!("scan_items: {:?}", items);
   controller::scan_items(items).await.map_err(convert_error)
@@ -17,7 +23,7 @@ async fn scan_items(items: Vec<protocol::Item>) -> Result<Vec<protocol::Item>, S
 fn main() {
   env_logger::init();
   tauri::Builder::default()
-    .invoke_handler(tauri::generate_handler![scan_items])
+    .invoke_handler(tauri::generate_handler![rename_items, scan_items])
     .run(tauri::generate_context!())
     .expect("error while running tauri application");
 }

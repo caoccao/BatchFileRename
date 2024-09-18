@@ -16,9 +16,35 @@
 */
 
 use anyhow::Result;
+use std::fs;
 use std::path::Path;
 
 use crate::protocol;
+
+pub async fn rename_items(items: Vec<protocol::Item>) -> Result<usize> {
+  let mut count = 0;
+  if !items.is_empty() {
+    // First pass: Check if source paths exist, and target paths do not exist.
+    for item in items.iter() {
+      let source_path = Path::new(item.source_path.as_str());
+      if !source_path.exists() {
+        return Err(anyhow::anyhow!("Source path {} does not exist.", source_path.display()));
+      }
+      let target_path = Path::new(item.target_path.as_str());
+      if target_path.exists() {
+        return Err(anyhow::anyhow!("Target path {} exists.", target_path.display()));
+      }
+    }
+    // Second pass: Rename the items.
+    for item in items.iter() {
+      let source_path = Path::new(item.source_path.as_str());
+      let target_path = Path::new(item.target_path.as_str());
+      fs::rename(source_path, target_path).map_err(anyhow::Error::msg)?;
+      count += 1;
+    }
+  }
+  Ok(count)
+}
 
 pub async fn scan_items(items: Vec<protocol::Item>) -> Result<Vec<protocol::Item>> {
   let mut new_items = if items.is_empty() {
