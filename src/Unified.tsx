@@ -15,54 +15,68 @@
  *   limitations under the License.
  */
 
-import DescriptionIcon from "@mui/icons-material/Description";
-import NumbersOutlinedIcon from "@mui/icons-material/NumbersOutlined";
-import Paper from "@mui/material/Paper";
-import Table from "@mui/material/Table";
-import TableBody from "@mui/material/TableBody";
-import TableCell from "@mui/material/TableCell";
-import TableContainer from "@mui/material/TableContainer";
-import TableHead from "@mui/material/TableHead";
-import TableRow from "@mui/material/TableRow";
+import {
+  Description as DescriptionIcon,
+  NumbersOutlined as NumbersOutlinedIcon,
+} from "@mui/icons-material";
 
-import ItemTypeIcon from "./ItemTypeIcon";
+import {
+  Paper,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Typography,
+} from "@mui/material";
+
 import { Item } from "./lib/Protocol";
+import ItemTypeIcon from "./ItemTypeIcon";
 
 export interface Args {
   items: Item[];
 }
 
 function Unified(args: Args) {
-  return (
-    <TableContainer component={Paper}>
-      <Table size="small">
-        <TableHead>
-          <TableRow>
-            <TableCell align="center" sx={{ width: 24, maxWidth: 24 }}>
-              <NumbersOutlinedIcon />
-            </TableCell>
-            <TableCell align="center" sx={{ width: 24, maxWidth: 24 }}>
-              <DescriptionIcon />
-            </TableCell>
-            <TableCell>Source</TableCell>
-            <TableCell>Target</TableCell>
-          </TableRow>
-        </TableHead>
-        <TableBody>
-          {args.items.map((item, index) => (
-            <TableRow key={item.sourcePath}>
-              <TableCell align="center">{index + 1}</TableCell>
-              <TableCell align="center">
-                <ItemTypeIcon type={item.type} />
+  if (args.items.length > 0) {
+    return (
+      <TableContainer component={Paper}>
+        <Table size="small">
+          <TableHead>
+            <TableRow>
+              <TableCell align="center" sx={{ width: 24, maxWidth: 24 }}>
+                <NumbersOutlinedIcon />
               </TableCell>
-              <TableCell>{item.sourcePath}</TableCell>
-              <TableCell>{item.targetPath}</TableCell>
+              <TableCell align="center" sx={{ width: 24, maxWidth: 24 }}>
+                <DescriptionIcon />
+              </TableCell>
+              <TableCell>Source</TableCell>
+              <TableCell>Target</TableCell>
             </TableRow>
-          ))}
-        </TableBody>
-      </Table>
-    </TableContainer>
-  );
+          </TableHead>
+          <TableBody>
+            {args.items.map((item, index) => (
+              <TableRow key={item.sourcePath}>
+                <TableCell align="center">{index + 1}</TableCell>
+                <TableCell align="center">
+                  <ItemTypeIcon type={item.type} />
+                </TableCell>
+                <TableCell>{item.sourcePath}</TableCell>
+                <TableCell>{item.targetPath}</TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </TableContainer>
+    );
+  } else {
+    return (
+      <Typography variant="h4" sx={{ textAlign: "center", mt: 5, mb: 5 }}>
+        Please drag-and-drop files or folders here.
+      </Typography>
+    );
+  }
 }
 
 export default Unified;

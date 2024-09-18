@@ -26,15 +26,14 @@ import type { Event, UnlistenFn } from "@tauri-apps/api/event";
 import type { FileDropEvent } from "@tauri-apps/api/window";
 
 import React from "react";
-import Box from "@mui/material/Box";
-import Tabs from "@mui/material/Tabs";
-import Tab from "@mui/material/Tab";
+import { Box, Tab, Tabs } from "@mui/material";
 
-import { BatchEditorType, Item, ItemType } from "./lib/Protocol";
+import { Item, ItemType } from "./lib/Protocol";
 
 import Footer from "./Footer";
 import SourceEditor from "./SourceEditor";
 import TargetEditor from "./TargetEditor";
+import Tools from "./Tools";
 import Unified from "./Unified";
 
 function App() {
@@ -80,8 +79,14 @@ function App() {
     };
   }, []);
 
+  function clear() {
+    setItems([]);
+    setTabIndex(0);
+  }
+
   return (
     <Box sx={{ width: "100%" }}>
+      <Tools clear={clear} items={items} setItems={setItems} />
       <Box sx={{ borderBottom: 1, borderColor: "divider", mb: "5px" }}>
         <Tabs
           value={tabIndex}
@@ -98,12 +103,14 @@ function App() {
             label="Source"
             id="tab-id-source"
             aria-controls="tab-control-source"
+            disabled={items.length === 0}
             sx={{ textTransform: "none" }}
           />
           <Tab
             label="Target"
             id="tab-id-target"
             aria-controls="tab-control-target"
+            disabled={items.length === 0}
             sx={{ textTransform: "none" }}
           />
           <Tab

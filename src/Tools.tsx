@@ -15,32 +15,40 @@
  *   limitations under the License.
  */
 
-import Editor from "@monaco-editor/react";
-
-import { Box } from "@mui/material";
+import { Recycling as RecyclingIcon } from "@mui/icons-material";
+import { Box, Button, Stack, Tooltip } from "@mui/material";
 
 import { Item } from "./lib/Protocol";
 
 export interface Args {
+  clear: () => void;
   items: Item[];
+  setItems: React.Dispatch<React.SetStateAction<Item[]>>;
 }
 
-function SourceEditor(args: Args) {
+function Tools(args: Args) {
+  function onClickClear() {
+    args.clear();
+  }
+
   return (
-    <Box sx={{ width: "100%" }}>
-      <Editor
-        height="80vh"
-        language="plaintext"
-        defaultValue=""
-        value={args.items.map((item) => item.sourcePath).join("\n")}
-        theme="light"
-        options={{
-          fontSize: 16,
-          readOnly: true,
-        }}
-      />
+    <Box>
+      <Stack direction="row" spacing={2}>
+        <Tooltip arrow title="Clear">
+          <Button
+            variant="outlined"
+            startIcon={<RecyclingIcon />}
+            onClick={onClickClear}
+            size="small"
+            disabled={args.items.length === 0}
+            sx={{ textTransform: "none" }}
+          >
+            Clear
+          </Button>
+        </Tooltip>
+      </Stack>
     </Box>
   );
 }
 
-export default SourceEditor;
+export default Tools;

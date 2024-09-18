@@ -15,9 +15,11 @@
  *   limitations under the License.
  */
 
-import HelpCenterOutlinedIcon from "@mui/icons-material/HelpCenterOutlined";
-import TextSnippetOutlinedIcon from "@mui/icons-material/TextSnippetOutlined";
-import TopicOutlinedIcon from "@mui/icons-material/TopicOutlined";
+import {
+  HelpCenterOutlined as HelpCenterOutlinedIcon,
+  TextSnippetOutlined as TextSnippetOutlinedIcon,
+  TopicOutlined as TopicOutlinedIcon,
+} from "@mui/icons-material";
 
 import { ItemType } from "./lib/Protocol";
 

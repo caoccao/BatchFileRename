@@ -16,18 +16,20 @@
  */
 
 import React from "react";
-import Checkbox from "@mui/material/Checkbox";
-import FormGroup from "@mui/material/FormGroup";
-import FormControlLabel from "@mui/material/FormControlLabel";
-import Stack from "@mui/material/Stack";
-import Tooltip from "@mui/material/Tooltip";
+import {
+  Box,
+  Checkbox,
+  FormGroup,
+  FormControlLabel,
+  Stack,
+  Tooltip,
+} from "@mui/material";
+
 import Editor from "@monaco-editor/react";
 import type { Monaco } from "@monaco-editor/react";
 import { editor } from "monaco-editor";
 // @ts-ignore
 import { initVimMode } from "monaco-vim";
-
-import Box from "@mui/material/Box";
 
 import { Item } from "./lib/Protocol";
 
@@ -115,7 +117,7 @@ function TargetEditor(args: Args) {
         </FormGroup>
       </Stack>
       <Editor
-        height="80vh"
+        height="75vh"
         language="plaintext"
         onMount={onMountEditor}
         defaultValue=""
