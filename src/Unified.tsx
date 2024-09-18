@@ -15,13 +15,19 @@
  *   limitations under the License.
  */
 
+import { invoke } from "@tauri-apps/api/tauri";
+
+import React from "react";
+
 import {
   Description as DescriptionIcon,
   NumbersOutlined as NumbersOutlinedIcon,
 } from "@mui/icons-material";
 
 import {
+  Button,
   Paper,
+  Stack,
   Table,
   TableBody,
   TableCell,
@@ -31,44 +37,80 @@ import {
   Typography,
 } from "@mui/material";
 
-import { Item } from "./lib/Protocol";
+import { Item, Notification, NotificationType } from "./lib/Protocol";
 import ItemTypeIcon from "./ItemTypeIcon";
 
 export interface Args {
   items: Item[];
+  setItems: React.Dispatch<React.SetStateAction<Item[]>>;
+  setNotification: React.Dispatch<React.SetStateAction<Notification>>;
 }
 
 function Unified(args: Args) {
+  const onClickScan = React.useCallback(() => {
+    invoke<Item[]>("scan_items", {
+      items: args.items,
+      depth: -1,
+      includeDirectory: true,
+      extensions: [],
+    })
+      .then((value) => {
+        args.setNotification({
+          message: "",
+          type: NotificationType.None,
+        });
+        args.setItems(value);
+      })
+      .catch((error) => {
+        args.setNotification({
+          message: `${error}`,
+          type: NotificationType.Error,
+        });
+      });
+  }, [args.items]);
+
   if (args.items.length > 0) {
     return (
-      <TableContainer component={Paper}>
-        <Table size="small">
-          <TableHead>
-            <TableRow>
-              <TableCell align="center" sx={{ width: 24, maxWidth: 24 }}>
-                <NumbersOutlinedIcon />
-              </TableCell>
-              <TableCell align="center" sx={{ width: 24, maxWidth: 24 }}>
-                <DescriptionIcon />
-              </TableCell>
-              <TableCell>Source</TableCell>
-              <TableCell>Target</TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {args.items.map((item, index) => (
-              <TableRow key={item.sourcePath}>
-                <TableCell align="center">{index + 1}</TableCell>
-                <TableCell align="center">
-                  <ItemTypeIcon type={item.type} />
+      <React.Fragment>
+        <Stack direction="row" spacing={2} sx={{ mb: "5px" }}>
+          <Button
+            variant="outlined"
+            size="small"
+            onClick={onClickScan}
+            sx={{ textTransform: "none" }}
+          >
+            Scan
+          </Button>
+        </Stack>
+        <TableContainer component={Paper}>
+          <Table size="small">
+            <TableHead>
+              <TableRow>
+                <TableCell align="center" sx={{ width: 24, maxWidth: 24 }}>
+                  <NumbersOutlinedIcon />
                 </TableCell>
-                <TableCell>{item.sourcePath}</TableCell>
-                <TableCell>{item.targetPath}</TableCell>
+                <TableCell align="center" sx={{ width: 24, maxWidth: 24 }}>
+                  <DescriptionIcon />
+                </TableCell>
+                <TableCell>Source</TableCell>
+                <TableCell>Target</TableCell>
               </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </TableContainer>
+            </TableHead>
+            <TableBody>
+              {args.items.map((item, index) => (
+                <TableRow key={item.sourcePath}>
+                  <TableCell align="center">{index + 1}</TableCell>
+                  <TableCell align="center">
+                    <ItemTypeIcon type={item.type} />
+                  </TableCell>
+                  <TableCell>{item.sourcePath}</TableCell>
+                  <TableCell>{item.targetPath}</TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </TableContainer>
+      </React.Fragment>
     );
   } else {
     return (

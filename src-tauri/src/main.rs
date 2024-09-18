@@ -15,9 +15,22 @@ async fn rename_items(items: Vec<protocol::Item>) -> Result<usize, String> {
 }
 
 #[tauri::command]
-async fn scan_items(items: Vec<protocol::Item>) -> Result<Vec<protocol::Item>, String> {
-  log::debug!("scan_items: {:?}", items);
-  controller::scan_items(items).await.map_err(convert_error)
+async fn scan_items(
+  items: Vec<protocol::Item>,
+  depth: i32,
+  include_directory: bool,
+  extensions: Vec<String>,
+) -> Result<Vec<protocol::Item>, String> {
+  log::debug!(
+    "scan_items: {:?}, depth: {}, include_directory: {}, extensions: {:?}",
+    items,
+    depth,
+    include_directory,
+    extensions
+  );
+  controller::scan_items(items, depth, include_directory, extensions)
+    .await
+    .map_err(convert_error)
 }
 
 fn main() {

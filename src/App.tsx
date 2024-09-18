@@ -65,7 +65,12 @@ function App() {
           }));
           clearNotification();
           setItems(newItems);
-          invoke<Item[]>("scan_items", { items: newItems })
+          invoke<Item[]>("scan_items", {
+            items: newItems,
+            depth: 0,
+            includeDirectory: true,
+            extensions: [],
+          })
             .then((value) => {
               setItems(value);
             })
@@ -148,7 +153,11 @@ function App() {
         aria-labelledby="tab-control-unified"
         hidden={tabIndex !== 0}
       >
-        <Unified items={items} />
+        <Unified
+          items={items}
+          setItems={setItems}
+          setNotification={setNotification}
+        />
       </div>
       <div
         id="tab-id-source"
