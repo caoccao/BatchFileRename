@@ -26,3 +26,14 @@ export enum ItemType {
   Directory = "Directory",
   Unknown = "Unknown",
 }
+
+export interface Notification {
+  message: string;
+  type: NotificationType;
+}
+
+export enum NotificationType {
+  Error = "Error",
+  Info = "Info",
+  None = "None",
+}

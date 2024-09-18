@@ -28,7 +28,7 @@ import type { FileDropEvent } from "@tauri-apps/api/window";
 import React from "react";
 import { Box, Tab, Tabs } from "@mui/material";
 
-import { Item, ItemType } from "./lib/Protocol";
+import { Item, ItemType, Notification, NotificationType } from "./lib/Protocol";
 
 import Footer from "./Footer";
 import SourceEditor from "./SourceEditor";
@@ -37,6 +37,10 @@ import Tools from "./Tools";
 import Unified from "./Unified";
 
 function App() {
+  const [notification, setNotification] = React.useState<Notification>({
+    message: "",
+    type: NotificationType.None,
+  });
   const [items, setItems] = React.useState<Item[]>([]);
 
   const [tabIndex, setTabIndex] = React.useState(0);
@@ -59,6 +63,7 @@ function App() {
             targetPath: path,
             type: ItemType.Unknown,
           }));
+          clearNotification();
           setItems(newItems);
           invoke<Item[]>("scan_items", { items: newItems })
             .then((value) => {
@@ -80,13 +85,26 @@ function App() {
   }, []);
 
   function clear() {
+    clearNotification();
     setItems([]);
     setTabIndex(0);
   }
 
+  function clearNotification() {
+    setNotification({
+      message: "",
+      type: NotificationType.None,
+    });
+  }
+
   return (
     <Box sx={{ width: "100%" }}>
-      <Tools clear={clear} items={items} setItems={setItems} />
+      <Tools
+        clear={clear}
+        items={items}
+        notification={notification}
+        setItems={setItems}
+      />
       <Box sx={{ borderBottom: 1, borderColor: "divider", mb: "5px" }}>
         <Tabs
           value={tabIndex}
@@ -140,7 +158,11 @@ function App() {
         aria-labelledby="tab-control-target"
         hidden={tabIndex !== 2}
       >
-        <TargetEditor items={items} setItems={setItems} />
+        <TargetEditor
+          items={items}
+          setItems={setItems}
+          setNotification={setNotification}
+        />
       </div>
       <div
         id="tab-id-settings"

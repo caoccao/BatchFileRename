@@ -15,14 +15,16 @@
  *   limitations under the License.
  */
 
+import { writeText } from "@tauri-apps/api/clipboard";
+
 import React from "react";
 import {
   Box,
+  Button,
   Checkbox,
   FormGroup,
   FormControlLabel,
   Stack,
-  Tooltip,
 } from "@mui/material";
 
 import Editor from "@monaco-editor/react";
@@ -31,11 +33,12 @@ import { editor } from "monaco-editor";
 // @ts-ignore
 import { initVimMode } from "monaco-vim";
 
-import { Item } from "./lib/Protocol";
+import { Item, Notification, NotificationType } from "./lib/Protocol";
 
 export interface Args {
   items: Item[];
   setItems: React.Dispatch<React.SetStateAction<Item[]>>;
+  setNotification: React.Dispatch<React.SetStateAction<Notification>>;
 }
 
 function TargetEditor(args: Args) {
@@ -43,40 +46,41 @@ function TargetEditor(args: Args) {
     React.useState<editor.IStandaloneCodeEditor | null>(null);
   const [vim, setVim] = React.useState<any>(null);
 
-  function onMountEditor(
-    monacoEditor: editor.IStandaloneCodeEditor,
-    monaco: Monaco
-  ) {
-    setMonacoEditor(monacoEditor);
-    monacoEditor.addAction({
-      id: `target-editor`,
-      label: `Target Editor`,
-      keybindings: [
-        monaco.KeyMod.CtrlCmd | monaco.KeyCode.KeyS,
-        monaco.KeyMod.WinCtrl | monaco.KeyCode.KeyS,
-      ],
-      run: function (monacoEditor: editor.ICodeEditor, ..._args: any[]): void {
-        const lines = monacoEditor
-          .getValue()
-          .split(/[\r\n]+/)
-          .map((line) => line.trim());
-        if (lines.length != args.items.length) {
-          // TODO
-          console.error("Error: items length mismatches.");
-        } else {
-          args.setItems(
-            args.items.map((item, i) => {
-              return {
-                sourcePath: item.sourcePath,
-                targetPath: lines[i],
-                type: item.type,
-              };
-            })
-          );
-        }
-      },
-    });
+  function onClickCopy() {
+    if (monacoEditor) {
+      writeText(monacoEditor.getValue());
+    }
   }
+
+  const onClickSave = React.useCallback(() => {
+    if (monacoEditor) {
+      const lines = monacoEditor
+        .getValue()
+        .split(/[\r\n]+/)
+        .map((line) => line.trim());
+      console.log(args.items);
+      if (lines.length != args.items.length) {
+        args.setNotification({
+          message: `Line count ${lines.length} mismatches with item count ${args.items.length}.`,
+          type: NotificationType.Error,
+        });
+      } else {
+        args.setNotification({
+          message: "",
+          type: NotificationType.None,
+        });
+        args.setItems(
+          args.items.map((item, i) => {
+            return {
+              sourcePath: item.sourcePath,
+              targetPath: lines[i],
+              type: item.type,
+            };
+          })
+        );
+      }
+    }
+  }, [args.items, monacoEditor]);
 
   function onClickVimMode() {
     if (vim === null) {
@@ -87,34 +91,45 @@ function TargetEditor(args: Args) {
     }
   }
 
+  function onMountEditor(
+    monacoEditor: editor.IStandaloneCodeEditor,
+    _monaco: Monaco
+  ) {
+    setMonacoEditor(monacoEditor);
+  }
+
   return (
     <Box sx={{ width: "100%" }}>
-      <Stack direction="row" spacing={2} sx={{ justifyContent: "center" }}>
-        <FormGroup>
-          <Tooltip
-            title="Vim Mode (Not Ready)"
-            arrow
-            slotProps={{
-              popper: {
-                modifiers: [
-                  {
-                    name: "offset",
-                    options: {
-                      offset: [0, -10],
-                    },
-                  },
-                ],
-              },
-            }}
-          >
-            <FormControlLabel
-              control={
-                <Checkbox checked={vim !== null} onClick={onClickVimMode} />
-              }
-              label="Vim Mode"
-            />
-          </Tooltip>
-        </FormGroup>
+      <Stack
+        direction="row"
+        spacing={2}
+        sx={{ mb: "5px", justifyContent: "center" }}
+      >
+        <Button
+          variant="outlined"
+          size="small"
+          onClick={onClickCopy}
+          sx={{ textTransform: "none" }}
+        >
+          Copy
+        </Button>
+        <Button
+          variant="outlined"
+          size="small"
+          onClick={onClickSave}
+          sx={{ textTransform: "none" }}
+        >
+          Save
+        </Button>
+        <Button
+          variant="outlined"
+          size="small"
+          onClick={onClickVimMode}
+          color={vim ? "secondary" : "primary"}
+          sx={{ textTransform: "none" }}
+        >
+          Vim Mode
+        </Button>
       </Stack>
       <Editor
         height="75vh"

@@ -15,9 +15,15 @@
  *   limitations under the License.
  */
 
-import Editor from "@monaco-editor/react";
+import { writeText } from "@tauri-apps/api/clipboard";
 
-import { Box } from "@mui/material";
+import React from "react";
+
+import Editor from "@monaco-editor/react";
+import type { Monaco } from "@monaco-editor/react";
+import { editor } from "monaco-editor";
+
+import { Box, Button, Stack } from "@mui/material";
 
 import { Item } from "./lib/Protocol";
 
@@ -26,11 +32,42 @@ export interface Args {
 }
 
 function SourceEditor(args: Args) {
+  const [monacoEditor, setMonacoEditor] =
+    React.useState<editor.IStandaloneCodeEditor | null>(null);
+
+  function onClickCopy() {
+    if (monacoEditor) {
+      writeText(monacoEditor.getValue());
+    }
+  }
+
+  function onMountEditor(
+    monacoEditor: editor.IStandaloneCodeEditor,
+    _monaco: Monaco
+  ) {
+    setMonacoEditor(monacoEditor);
+  }
+
   return (
     <Box sx={{ width: "100%" }}>
+      <Stack
+        direction="row"
+        spacing={2}
+        sx={{ mb: "5px", justifyContent: "center" }}
+      >
+        <Button
+          variant="outlined"
+          size="small"
+          onClick={onClickCopy}
+          sx={{ textTransform: "none" }}
+        >
+          Copy
+        </Button>
+      </Stack>
       <Editor
-        height="80vh"
+        height="75vh"
         language="plaintext"
+        onMount={onMountEditor}
         defaultValue=""
         value={args.items.map((item) => item.sourcePath).join("\n")}
         theme="light"

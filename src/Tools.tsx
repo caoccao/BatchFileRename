@@ -16,14 +16,34 @@
  */
 
 import { Recycling as RecyclingIcon } from "@mui/icons-material";
-import { Box, Button, Stack, Tooltip } from "@mui/material";
+import { Box, Button, Stack, Tooltip, Typography } from "@mui/material";
 
-import { Item } from "./lib/Protocol";
+import { Item, Notification, NotificationType } from "./lib/Protocol";
 
 export interface Args {
   clear: () => void;
   items: Item[];
+  notification: Notification;
   setItems: React.Dispatch<React.SetStateAction<Item[]>>;
+}
+
+function NotificationBox(args: { notification: Notification }) {
+  switch (args.notification.type) {
+    case NotificationType.Error:
+      return (
+        <Typography variant="body1" color="error">
+          {args.notification.message}
+        </Typography>
+      );
+    case NotificationType.Info:
+      return (
+        <Typography variant="body1" color="info">
+          {args.notification.message}
+        </Typography>
+      );
+    default:
+      return <></>;
+  }
 }
 
 function Tools(args: Args) {
@@ -46,6 +66,7 @@ function Tools(args: Args) {
             Clear
           </Button>
         </Tooltip>
+        <NotificationBox notification={args.notification} />
       </Stack>
     </Box>
   );
