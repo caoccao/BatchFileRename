@@ -29,7 +29,7 @@ import { initVimMode } from "monaco-vim";
 
 import Box from "@mui/material/Box";
 
-import { BatchEditorType, Item } from "./lib/Protocol";
+import { Item } from "./lib/Protocol";
 
 export interface Args {
   items: Item[];
@@ -128,7 +128,12 @@ function TargetEditor(args: Args) {
       />
       <code
         className={`status-node`}
-        style={{ padding: "3px", backgroundColor: "lightgray", marginTop: "3px", color: "black" }}
+        style={{
+          padding: "3px",
+          backgroundColor: "lightgray",
+          marginTop: "3px",
+          color: "black",
+        }}
       ></code>
     </Box>
   );
