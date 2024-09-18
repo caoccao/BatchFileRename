@@ -19,7 +19,8 @@ import { invoke } from "@tauri-apps/api/tauri";
 
 import React from "react";
 
-import { Stack, TextField } from "@mui/material";
+import { Button, Stack, TextField } from "@mui/material";
+import { SaveAltOutlined as SaveAltOutlinedIcon } from "@mui/icons-material";
 
 import { Config, Notification, NotificationType } from "./lib/Protocol";
 
@@ -30,14 +31,22 @@ interface Args {
 }
 
 function Settings(args: Args) {
-  const [extensionText, setExtensionText] = React.useState<string>("");
+  const [dirty, setDirty] = React.useState(false);
+  const [extensionText, setExtensionText] = React.useState("");
 
   function onBlurExtensions(_e: React.FocusEvent<HTMLInputElement>) {
-    const extensions = extensionText.split(",").map((e) => e.trim());
+    const extensions = extensionText
+      .split(",")
+      .map((e) => e.trim())
+      .filter((e) => e.length > 0);
+    args.setConfig({
+      extensions,
+    });
+  }
+
+  const onClickSave = React.useCallback(() => {
     invoke<Config>("set_config", {
-      config: {
-        extensions,
-      },
+      config: args.config,
     })
       .then((value) => {
         args.setNotification({
@@ -45,6 +54,7 @@ function Settings(args: Args) {
           type: NotificationType.None,
         });
         args.setConfig(value);
+        setDirty(false);
       })
       .catch((error) => {
         args.setNotification({
@@ -52,9 +62,10 @@ function Settings(args: Args) {
           type: NotificationType.Error,
         });
       });
-  }
+  }, [args.config]);
 
   function onChangeExtensionText(e: React.ChangeEvent<HTMLInputElement>) {
+    setDirty(true);
     setExtensionText(e.target.value);
   }
 
@@ -65,7 +76,7 @@ function Settings(args: Args) {
   }, [args.config]);
 
   return (
-    <Stack direction="row" spacing={2} sx={{ mt: "20px" }}>
+    <Stack spacing={2} sx={{ mt: "20px" }}>
       <TextField
         label="Extensions"
         fullWidth
@@ -74,6 +85,17 @@ function Settings(args: Args) {
         onChange={onChangeExtensionText}
         onBlur={onBlurExtensions}
       />
+      <Button
+        variant="outlined"
+        startIcon={<SaveAltOutlinedIcon />}
+        onClick={onClickSave}
+        size="small"
+        disabled={!dirty}
+        fullWidth={false}
+        sx={{ textTransform: "none", width: "120px" }}
+      >
+        Save
+      </Button>
     </Stack>
   );
 }
