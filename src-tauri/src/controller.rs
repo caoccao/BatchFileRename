@@ -83,23 +83,79 @@ fn recursive_scan_items(
 pub async fn rename_items(items: Vec<protocol::Item>) -> Result<usize> {
   let mut count = 0;
   if !items.is_empty() {
-    // First pass: Check if source paths exist, and target paths do not exist.
+    // Step 1: Normalize the paths.
+    let items: Vec<protocol::Item> = items
+      .into_iter()
+      .map(|item| protocol::Item {
+        source_path: Path::new(item.source_path.as_str()).to_str().unwrap().to_string(),
+        target_path: Path::new(item.target_path.as_str()).to_str().unwrap().to_string(),
+        item_type: item.item_type,
+      })
+      .collect();
+    // Step 2: Check duplicated source and target paths.
+    let mut source_path_set: HashSet<String> = HashSet::new();
+    for item in items.iter() {
+      if source_path_set.contains(item.source_path.as_str()) {
+        return Err(anyhow::anyhow!("Source path {} is duplicated.", item.source_path));
+      }
+      source_path_set.insert(item.source_path.clone());
+    }
+    let mut target_path_set: HashSet<String> = HashSet::new();
+    for item in items.iter() {
+      if target_path_set.contains(item.target_path.as_str()) {
+        return Err(anyhow::anyhow!("Target path {} is duplicated.", item.target_path));
+      }
+      target_path_set.insert(item.target_path.clone());
+    }
+    // Step 3: Check if source paths exist, and target paths do not exist.
     for item in items.iter() {
       let source_path = Path::new(item.source_path.as_str());
       if !source_path.exists() {
         return Err(anyhow::anyhow!("Source path {} does not exist.", source_path.display()));
       }
       let target_path = Path::new(item.target_path.as_str());
-      if target_path.exists() {
+      if target_path.exists() && !source_path_set.contains(item.target_path.as_str()) {
         return Err(anyhow::anyhow!("Target path {} exists.", target_path.display()));
       }
     }
-    // Second pass: Rename the items.
+    // Step 4: Resolve the renaming sequence.
+    let mut pass_1_items: Vec<protocol::Item> = Vec::new();
+    let mut pass_2_items: Vec<protocol::Item> = Vec::new();
     for item in items.iter() {
-      let source_path = Path::new(item.source_path.as_str());
-      let target_path = Path::new(item.target_path.as_str());
-      fs::rename(source_path, target_path).map_err(anyhow::Error::msg)?;
-      count += 1;
+      // Resolve the conflict.
+      if source_path_set.contains(item.target_path.as_str()) {
+        if let Some(parent_path) = Path::new(item.target_path.as_str()).parent() {
+          let name = uuid::Uuid::new_v4();
+          let temp_path = parent_path.join(name.to_string()).to_str().unwrap().to_string();
+          pass_1_items.push(protocol::Item {
+            source_path: item.source_path.clone(),
+            target_path: temp_path.clone(),
+            item_type: item.item_type,
+          });
+          pass_2_items.push(protocol::Item {
+            source_path: temp_path.clone(),
+            target_path: item.target_path.clone(),
+            item_type: item.item_type,
+          });
+        } else {
+          return Err(anyhow::anyhow!("Target path {} cannot be resolved.", item.target_path));
+        }
+      } else {
+        pass_1_items.push(item.clone());
+      }
+    }
+    // Step 5: Rename the items.
+    for items in [pass_1_items, pass_2_items].iter() {
+      for item in items.iter() {
+        let source_path = Path::new(item.source_path.as_str());
+        let target_path = Path::new(item.target_path.as_str());
+        let target_parent_path = target_path.parent().unwrap();
+        if !target_parent_path.exists() {
+          fs::create_dir_all(target_parent_path).map_err(anyhow::Error::msg)?;
+        }
+        fs::rename(source_path, target_path).map_err(anyhow::Error::msg)?;
+        count += 1;
+      }
     }
   }
   Ok(count)
@@ -115,14 +171,21 @@ pub async fn scan_items(
     Vec::new()
   } else {
     let extensions: HashSet<String> = extensions.into_iter().collect();
-    let mut item_set= HashSet::<String>::new();
+    let mut item_set = HashSet::<String>::new();
     let mut new_items: Vec<protocol::Item> = Vec::new();
     for item in items.iter() {
       let path = Path::new(item.source_path.as_str());
       if !path.exists() {
         return Err(anyhow::anyhow!("Path {} does not exist.", path.display()));
       }
-      recursive_scan_items(&mut new_items, path, &mut item_set, depth, include_directory, &extensions)?
+      recursive_scan_items(
+        &mut new_items,
+        path,
+        &mut item_set,
+        depth,
+        include_directory,
+        &extensions,
+      )?
     }
     new_items
   };

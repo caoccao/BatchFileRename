@@ -26,6 +26,11 @@ log = "0.4.22"
 once_cell = "1.19.0"
 anyhow = "1.0.86"
 env_logger = "0.11.5"
+uuid = { version = "1.10.0", features = [
+  "v4",
+  "fast-rng",
+  "macro-diagnostics",
+] }
 
 [features]
 # This feature is used for production builds or when a dev server is not specified, DO NOT REMOVE!!
