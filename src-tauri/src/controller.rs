@@ -30,27 +30,31 @@ pub async fn get_config() -> Result<config::Config> {
 fn recursive_scan_items(
   items: &mut Vec<protocol::Item>,
   path: &Path,
+  item_set: &mut HashSet<String>,
   depth: i32,
   include_directory: bool,
   extensions: &HashSet<String>,
 ) -> Result<()> {
   if path.is_dir() {
-    if include_directory {
+    let path_str = path.to_str().unwrap();
+    if include_directory && !item_set.contains(path_str) {
       items.push(protocol::Item {
-        source_path: path.to_str().unwrap().to_string(),
-        target_path: path.to_str().unwrap().to_string(),
+        source_path: path_str.to_string(),
+        target_path: path_str.to_string(),
         item_type: protocol::ItemType::Directory,
       });
+      item_set.insert(path_str.to_string());
     }
     if depth != 0 {
       for entry in path.read_dir().map_err(anyhow::Error::msg)? {
         let entry = entry.map_err(anyhow::Error::msg)?;
         let path_buf = entry.path();
         let path = path_buf.as_path();
-        recursive_scan_items(items, path, depth, include_directory, extensions)?;
+        recursive_scan_items(items, path, item_set, depth, include_directory, extensions)?;
       }
     }
   } else if path.is_file() {
+    let path_str = path.to_str().unwrap();
     let extension_included = if extensions.is_empty() {
       true
     } else if let Some(extension) = path.extension() {
@@ -62,12 +66,13 @@ fn recursive_scan_items(
     } else {
       true
     };
-    if extension_included {
+    if extension_included && !item_set.contains(path_str) {
       items.push(protocol::Item {
-        source_path: path.to_str().unwrap().to_string(),
-        target_path: path.to_str().unwrap().to_string(),
+        source_path: path_str.to_string(),
+        target_path: path_str.to_string(),
         item_type: protocol::ItemType::File,
       });
+      item_set.insert(path_str.to_string());
     }
   } else {
     log::warn!("Unknown item: {}", path.to_str().unwrap());
@@ -110,13 +115,14 @@ pub async fn scan_items(
     Vec::new()
   } else {
     let extensions: HashSet<String> = extensions.into_iter().collect();
+    let mut item_set= HashSet::<String>::new();
     let mut new_items: Vec<protocol::Item> = Vec::new();
     for item in items.iter() {
       let path = Path::new(item.source_path.as_str());
       if !path.exists() {
         return Err(anyhow::anyhow!("Path {} does not exist.", path.display()));
       }
-      recursive_scan_items(&mut new_items, path, depth, include_directory, &extensions)?
+      recursive_scan_items(&mut new_items, path, &mut item_set, depth, include_directory, &extensions)?
     }
     new_items
   };

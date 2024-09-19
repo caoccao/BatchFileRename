@@ -37,6 +37,7 @@ import {
   TableHead,
   TableRow,
   TextField,
+  Tooltip,
   Typography,
 } from "@mui/material";
 
@@ -76,7 +77,7 @@ function Unified(args: Args) {
           type: NotificationType.Error,
         });
       });
-  }, [args.items, depth, includeDirectory]);
+  }, [args.items, depth, includeDirectory, filterByExtensions, args.config]);
 
   function onChangeDepth(event: React.ChangeEvent<HTMLInputElement>) {
     setDepth(Number(event.target.value));
@@ -106,33 +107,42 @@ function Unified(args: Args) {
           >
             Scan
           </Button>
-          <FormControlLabel
-            control={
-              <Checkbox
-                checked={includeDirectory}
-                onChange={onChangeIncludeDirectory}
-              />
-            }
-            label="Include Directory"
-          />
-          <TextField
-            type="number"
-            label="Depth"
-            variant="outlined"
-            value={depth}
-            onChange={onChangeDepth}
-            size="small"
-            sx={{ width: "70px" }}
-          />
-          <FormControlLabel
-            control={
-              <Checkbox
-                checked={filterByExtensions}
-                onChange={onChangeFilterByExtensions}
-              />
-            }
-            label="Filter by Extensions"
-          />
+          <Tooltip arrow title="Scan the directories.">
+            <FormControlLabel
+              control={
+                <Checkbox
+                  checked={includeDirectory}
+                  onChange={onChangeIncludeDirectory}
+                />
+              }
+              label="Include Directory"
+            />
+          </Tooltip>
+          <Tooltip
+            arrow
+            title="Scan the directories recursively by the given depth. -1 means no limit."
+          >
+            <TextField
+              type="number"
+              label="Depth"
+              variant="outlined"
+              value={depth}
+              onChange={onChangeDepth}
+              size="small"
+              sx={{ width: "70px" }}
+            />
+          </Tooltip>
+          <Tooltip arrow title={`Filter by ${args.config?.extensions.join(", ")}.`}>
+            <FormControlLabel
+              control={
+                <Checkbox
+                  checked={filterByExtensions}
+                  onChange={onChangeFilterByExtensions}
+                />
+              }
+              label="Filter by Extensions"
+            />
+          </Tooltip>
         </Stack>
         <TableContainer component={Paper}>
           <Table size="small">

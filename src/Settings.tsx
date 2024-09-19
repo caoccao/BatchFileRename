@@ -71,7 +71,7 @@ function Settings(args: Args) {
 
   React.useEffect(() => {
     if (args.config) {
-      setExtensionText(args.config.extensions.join(","));
+      setExtensionText(args.config.extensions.join(", "));
     }
   }, [args.config]);
 
