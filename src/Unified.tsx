@@ -21,6 +21,7 @@ import React from "react";
 
 import {
   Description as DescriptionIcon,
+  DocumentScannerOutlined as DocumentScannerOutlinedIcon,
   NumbersOutlined as NumbersOutlinedIcon,
 } from "@mui/icons-material";
 
@@ -101,6 +102,7 @@ function Unified(args: Args) {
         <Stack direction="row" spacing={2} sx={{ mt: "10px", mb: "5px" }}>
           <Button
             variant="outlined"
+            startIcon={<DocumentScannerOutlinedIcon />}
             size="small"
             onClick={onClickScan}
             sx={{ textTransform: "none" }}
@@ -132,7 +134,10 @@ function Unified(args: Args) {
               sx={{ width: "70px" }}
             />
           </Tooltip>
-          <Tooltip arrow title={`Filter by ${args.config?.extensions.join(", ")}.`}>
+          <Tooltip
+            arrow
+            title={`Filter by ${args.config?.extensions.join(", ")}.`}
+          >
             <FormControlLabel
               control={
                 <Checkbox

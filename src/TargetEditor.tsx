@@ -18,14 +18,12 @@
 import { writeText } from "@tauri-apps/api/clipboard";
 
 import React from "react";
+import { Box, Button, Stack } from "@mui/material";
 import {
-  Box,
-  Button,
-  Checkbox,
-  FormGroup,
-  FormControlLabel,
-  Stack,
-} from "@mui/material";
+  ContentCopyOutlined as ContentCopyOutlinedIcon,
+  SaveOutlined as SaveOutlinedIcon,
+  TerminalOutlined as TerminalOutlinedIcon,
+} from "@mui/icons-material";
 
 import Editor from "@monaco-editor/react";
 import type { Monaco } from "@monaco-editor/react";
@@ -103,6 +101,7 @@ function TargetEditor(args: Args) {
       <Stack direction="row" spacing={2} sx={{ mb: "5px" }}>
         <Button
           variant="outlined"
+          startIcon={<ContentCopyOutlinedIcon />}
           size="small"
           onClick={onClickCopy}
           sx={{ textTransform: "none" }}
@@ -111,6 +110,7 @@ function TargetEditor(args: Args) {
         </Button>
         <Button
           variant="outlined"
+          startIcon={<SaveOutlinedIcon />}
           size="small"
           onClick={onClickSave}
           sx={{ textTransform: "none" }}
@@ -119,6 +119,7 @@ function TargetEditor(args: Args) {
         </Button>
         <Button
           variant="outlined"
+          startIcon={<TerminalOutlinedIcon />}
           size="small"
           onClick={onClickVimMode}
           color={vim ? "secondary" : "primary"}
@@ -145,6 +146,7 @@ function TargetEditor(args: Args) {
           backgroundColor: "lightgray",
           marginTop: "3px",
           color: "black",
+          display: "none",
         }}
       ></code>
     </Box>

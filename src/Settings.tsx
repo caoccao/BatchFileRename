@@ -20,7 +20,7 @@ import { invoke } from "@tauri-apps/api/tauri";
 import React from "react";
 
 import { Button, Stack, TextField } from "@mui/material";
-import { SaveAltOutlined as SaveAltOutlinedIcon } from "@mui/icons-material";
+import { SaveOutlined as SaveOutlinedIcon } from "@mui/icons-material";
 
 import { Config, Notification, NotificationType } from "./lib/Protocol";
 
@@ -87,7 +87,7 @@ function Settings(args: Args) {
       />
       <Button
         variant="outlined"
-        startIcon={<SaveAltOutlinedIcon />}
+        startIcon={<SaveOutlinedIcon />}
         onClick={onClickSave}
         size="small"
         disabled={!dirty}
