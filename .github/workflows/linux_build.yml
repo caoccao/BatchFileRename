@@ -5,7 +5,7 @@ on:
     types: [opened, synchronize, reopened, ready_for_review]
     paths-ignore:
       - .github/**
-      - "!.github/workflows/windows_build.yml"
+      - "!.github/workflows/linux_build.yml"
       - "**.md"
       - "docs/**"
   push:
@@ -13,7 +13,7 @@ on:
       - main
     paths-ignore:
       - .github/**
-      - "!.github/workflows/windows_build.yml"
+      - "!.github/workflows/linux_build.yml"
       - "**.md"
       - "docs/**"
 
@@ -52,14 +52,14 @@ jobs:
     - name: Upgrade Ubuntu
       run: |
         sudo apt-get update
-        sudo apt-get install -y libsoup2.4-dev libwebkit2gtk-4.0-dev
+        sudo apt-get install -y libsoup2.4-dev libwebkit2gtk-4.0-dev librsvg2-dev
 
     - name: Build BatchFileRename
       run: |
         pnpm install
-        pnpm tauri build | echo "Something is wrong with the build process. But keep going. :)"
+        pnpm tauri build
 
-    - name: Upload the dev
+    - name: Upload the deb
       uses: actions/upload-artifact@v4
       with:
         name: BatchFileRename-linux-x86_64-${{ env.BATCH_FILE_RENAME_VERSION }}-deb
@@ -72,3 +72,10 @@ jobs:
         name: BatchFileRename-linux-x86_64-${{ env.BATCH_FILE_RENAME_VERSION }}-rpm
         path: |
           src-tauri/target/release/bundle/rpm/*.rpm
+
+    - name: Upload the AppImage
+      uses: actions/upload-artifact@v4
+      with:
+        name: BatchFileRename-linux-x86_64-${{ env.BATCH_FILE_RENAME_VERSION }}-AppImage
+        path: |
+          src-tauri/target/release/bundle/appimage/*.AppImage
