@@ -1,5 +1,5 @@
 [package]
-name = "batch-file-rename"
+name = "BatchFileRename"
 version = "0.1.0"
 description = "A batch file rename GUI application with split view for both source and target files."
 authors = ["Sam Cao"]

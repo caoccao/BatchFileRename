@@ -1,0 +1,72 @@
+name: MacOS Build
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, ready_for_review]
+    paths-ignore:
+      - .github/**
+      - "!.github/workflows/macos_build.yml"
+      - "**.md"
+      - "docs/**"
+  push:
+    branches:
+      - main
+    paths-ignore:
+      - .github/**
+      - "!.github/workflows/macos_build.yml"
+      - "**.md"
+      - "docs/**"
+
+env:
+  BATCH_FILE_RENAME_VERSION: 0.1.0
+
+jobs:
+  build_package:
+    strategy:
+      matrix:
+        include:
+          - image: macos-13
+            os: macos
+            arch: x86_64
+          - image: macos-14
+            os: macos
+            arch: arm64
+
+    name: Build for ${{ matrix.os }} ${{ matrix.arch }}
+    runs-on: ${{ matrix.image }}
+
+    steps:
+    - name: Set git to use LF
+      run: |
+        git config --global core.autocrlf false
+        git config --global core.eol lf
+
+    - name: Checkout the code
+      uses: actions/checkout@v4
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: 22
+
+    - name: Setup pnpm
+      uses: pnpm/action-setup@v4
+      with:
+        version: 9
+
+    - name: Setup Rust
+      uses: actions-rust-lang/setup-rust-toolchain@v1
+      with:
+        toolchain: stable
+
+    - name: Build BatchFileRename
+      run: |
+        pnpm install
+        pnpm tauri build
+
+    - name: Upload the Artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: BatchFileRename-${{ matrix.os }}-${{ matrix.arch }}-${{ env.BATCH_FILE_RENAME_VERSION }}
+        path: |
+          src-tauri/target/release/bundle/dmg/*.dmg

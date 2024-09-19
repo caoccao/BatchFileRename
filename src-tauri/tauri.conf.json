@@ -6,7 +6,7 @@
     "distDir": "../dist"
   },
   "package": {
-    "productName": "batch-file-rename",
+    "productName": "BatchFileRename",
     "version": "0.1.0"
   },
   "tauri": {
