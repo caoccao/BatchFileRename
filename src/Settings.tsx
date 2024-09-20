@@ -63,6 +63,7 @@ import {
 interface Args {
   config: Config | null;
   setConfig: React.Dispatch<React.SetStateAction<Config | null>>;
+  setGlobalKeyboardShortcutsEnabled: React.Dispatch<React.SetStateAction<boolean>>;
   setNotification: React.Dispatch<React.SetStateAction<Notification>>;
 }
 
@@ -115,12 +116,14 @@ function Settings(args: Args) {
     _event: React.MouseEvent<HTMLButtonElement, MouseEvent>
   ): void {
     setDialogPluginOpen(true);
+    args.setGlobalKeyboardShortcutsEnabled(false);
   }
 
   function onClickDialogPluginButtonCancel(
     _event: React.MouseEvent<HTMLButtonElement, MouseEvent>
   ): void {
     setDialogPluginOpen(false);
+    args.setGlobalKeyboardShortcutsEnabled(true);
   }
 
   function onClickDialogPluginVimMode() {
@@ -148,8 +151,8 @@ function Settings(args: Args) {
     if (monacoEditor) {
       formObject["code"] = monacoEditor.getValue();
     }
-    console.log(formObject);
     setDialogPluginOpen(false);
+    args.setGlobalKeyboardShortcutsEnabled(true);
   }
 
   React.useEffect(() => {

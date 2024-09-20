@@ -47,11 +47,13 @@ const TAB_SIZE = 4;
 
 function App() {
   const [config, setConfig] = React.useState<Config | null>(null);
+  const [items, setItems] = React.useState<Item[]>([]);
+  const [globalKeyboardShortcutsEnabled, setGlobalKeyboardShortcutsEnabled] =
+    React.useState(true);
   const [notification, setNotification] = React.useState<Notification>({
     message: "",
     type: NotificationType.None,
   });
-  const [items, setItems] = React.useState<Item[]>([]);
 
   const [tabIndex, setTabIndex] = React.useState(0);
 
@@ -59,79 +61,81 @@ function App() {
     clear();
   }, [items, notification]);
 
-  const handleKeyboardShortcuts = React.useCallback(
+  const handleGlobalKeyboardShortcuts = React.useCallback(
     (event: KeyboardEvent) => {
-      if (
-        !event.altKey &&
-        !event.ctrlKey &&
-        !event.metaKey &&
-        !event.shiftKey
-      ) {
-        switch (event.key) {
-          case "F2":
-            event.preventDefault();
-            handleRename();
-            break;
-          case "F8":
-            event.preventDefault();
-            handleClear();
-            break;
-          default:
-            break;
-        }
-      } else if (
-        event.ctrlKey &&
-        !event.altKey &&
-        !event.metaKey &&
-        !event.shiftKey
-      ) {
-        switch (event.key) {
-          case "1":
-          case "4":
-            event.preventDefault();
-            setTabIndex(Number(event.key) - 1);
-            break;
-          case "2":
-          case "3":
-            event.preventDefault();
-            if (items.length > 0) {
+      if (globalKeyboardShortcutsEnabled) {
+        if (
+          !event.altKey &&
+          !event.ctrlKey &&
+          !event.metaKey &&
+          !event.shiftKey
+        ) {
+          switch (event.key) {
+            case "F2":
+              event.preventDefault();
+              handleRename();
+              break;
+            case "F8":
+              event.preventDefault();
+              handleClear();
+              break;
+            default:
+              break;
+          }
+        } else if (
+          event.ctrlKey &&
+          !event.altKey &&
+          !event.metaKey &&
+          !event.shiftKey
+        ) {
+          switch (event.key) {
+            case "1":
+            case "4":
+              event.preventDefault();
               setTabIndex(Number(event.key) - 1);
-            }
-            break;
-          case "Tab":
-            let index = 0;
-            if (items.length > 0) {
-              index = tabIndex + 1;
-            } else {
-              index = tabIndex == 0 ? 3 : 0;
-            }
-            index = index % TAB_SIZE;
-            setTabIndex(index);
-            break;
-        }
-      } else if (
-        event.ctrlKey &&
-        event.shiftKey &&
-        !event.altKey &&
-        !event.metaKey
-      ) {
-        switch (event.key) {
-          case "Tab":
-            let index = 0;
-            if (items.length > 0) {
-              index = tabIndex - 1;
-            } else {
-              index = tabIndex == 0 ? 3 : 0;
-            }
-            if (index < 0) {
-              index += TAB_SIZE;
-            }
-            setTabIndex(index);
-            break;
+              break;
+            case "2":
+            case "3":
+              event.preventDefault();
+              if (items.length > 0) {
+                setTabIndex(Number(event.key) - 1);
+              }
+              break;
+            case "Tab":
+              let index = 0;
+              if (items.length > 0) {
+                index = tabIndex + 1;
+              } else {
+                index = tabIndex == 0 ? 3 : 0;
+              }
+              index = index % TAB_SIZE;
+              setTabIndex(index);
+              break;
+          }
+        } else if (
+          event.ctrlKey &&
+          event.shiftKey &&
+          !event.altKey &&
+          !event.metaKey
+        ) {
+          switch (event.key) {
+            case "Tab":
+              let index = 0;
+              if (items.length > 0) {
+                index = tabIndex - 1;
+              } else {
+                index = tabIndex == 0 ? 3 : 0;
+              }
+              if (index < 0) {
+                index += TAB_SIZE;
+              }
+              setTabIndex(index);
+              break;
+          }
         }
       }
     },
-    [items, notification, tabIndex]
+    [items, globalKeyboardShortcutsEnabled, notification, tabIndex]
   );
 
   const handleRename = React.useCallback(() => {
@@ -200,14 +204,14 @@ function App() {
           type: NotificationType.Error,
         });
       });
-    document.addEventListener("keydown", handleKeyboardShortcuts);
+    document.addEventListener("keydown", handleGlobalKeyboardShortcuts);
     return () => {
       if (cancelFileDrop) {
         cancelFileDrop();
       }
-      document.removeEventListener("keydown", handleKeyboardShortcuts);
+      document.removeEventListener("keydown", handleGlobalKeyboardShortcuts);
     };
-  }, [items, notification, tabIndex]);
+  }, [items, globalKeyboardShortcutsEnabled, notification, tabIndex]);
 
   function clear() {
     clearNotification();
@@ -303,6 +307,7 @@ function App() {
         <Settings
           config={config}
           setConfig={setConfig}
+          setGlobalKeyboardShortcutsEnabled={setGlobalKeyboardShortcutsEnabled}
           setNotification={setNotification}
         />
       </div>
