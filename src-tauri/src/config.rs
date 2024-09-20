@@ -70,7 +70,17 @@ impl Config {
     log::debug!("Loading config from {}.", path_string);
     let file = File::open(path).expect(format!("Couldn't open config file {}.", path_string).as_str());
     let buf_reader = BufReader::new(file);
-    serde_json::from_reader(buf_reader).expect(format!("Couldn't parse config file {}.", path_string).as_str())
+    match serde_json::from_reader(buf_reader) {
+      Ok(config) => config,
+      Err(err) => {
+        log::error!("Couldn't load the config because {}", err);
+        let config = Self::default();
+        if let Err(err) = config.save(cloned_path) {
+          log::error!("Couldn't save the default config because {}", err);
+        }
+        config
+      }
+    }
   }
 
   fn save(&self, path: PathBuf) -> Result<()> {

@@ -194,16 +194,18 @@ function App() {
       .then((value) => {
         cancelFileDrop = value;
       });
-    invoke<Config>("get_config")
-      .then((result) => {
-        setConfig(result);
-      })
-      .catch((error) => {
-        setNotification({
-          message: `${error}`,
-          type: NotificationType.Error,
+    if (config === null) {
+      invoke<Config>("get_config")
+        .then((result) => {
+          setConfig(result);
+        })
+        .catch((error) => {
+          setNotification({
+            message: `${error}`,
+            type: NotificationType.Error,
+          });
         });
-      });
+    }
     document.addEventListener("keydown", handleGlobalKeyboardShortcuts);
     return () => {
       if (cancelFileDrop) {
@@ -211,7 +213,7 @@ function App() {
       }
       document.removeEventListener("keydown", handleGlobalKeyboardShortcuts);
     };
-  }, [items, globalKeyboardShortcutsEnabled, notification, tabIndex]);
+  }, [items, config, globalKeyboardShortcutsEnabled, notification, tabIndex]);
 
   function clear() {
     clearNotification();
