@@ -24,7 +24,6 @@ import {
   DocumentScannerOutlined as DocumentScannerOutlinedIcon,
   HighlightOffOutlined as HighlightOffOutlinedIcon,
   NumbersOutlined as NumbersOutlinedIcon,
-  RecyclingOutlined as RecyclingOutlinedIcon,
   SaveAltOutlined as SaveAltOutlinedIcon,
 } from "@mui/icons-material";
 
