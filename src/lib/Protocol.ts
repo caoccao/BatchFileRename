@@ -17,6 +17,13 @@
 
 export interface Config {
   extensions: string[];
+  plugins: ConfigPlugin[];
+}
+
+export interface ConfigPlugin {
+  name: string;
+  description: string;
+  code: string;
 }
 
 export interface Item {

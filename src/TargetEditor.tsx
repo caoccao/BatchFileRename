@@ -82,7 +82,7 @@ function TargetEditor(args: Args) {
 
   function onClickVimMode() {
     if (vim === null) {
-      setVim(initVimMode(monacoEditor, document.querySelector(`.status-node`)));
+      setVim(initVimMode(monacoEditor, document.querySelector(`.status-node-target`)));
     } else {
       vim.dispose();
       setVim(null);
@@ -118,11 +118,10 @@ function TargetEditor(args: Args) {
           Save
         </Button>
         <Button
-          variant="outlined"
+          variant={vim ? "contained" : "outlined"}
           startIcon={<TerminalOutlinedIcon />}
           size="small"
           onClick={onClickVimMode}
-          color={vim ? "secondary" : "primary"}
           sx={{ textTransform: "none" }}
         >
           Vim Mode
@@ -140,7 +139,7 @@ function TargetEditor(args: Args) {
         }}
       />
       <code
-        className={`status-node`}
+        className={`status-node-target`}
         style={{
           padding: "3px",
           backgroundColor: "lightgray",

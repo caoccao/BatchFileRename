@@ -58,7 +58,7 @@ export interface Args {
 function Dashboard(args: Args) {
   const [depth, setDepth] = React.useState(-1);
   const [filterByExtensions, setFilterByExtensions] = React.useState(true);
-  const [includeDirectory, setIncludeDirectory] = React.useState(true);
+  const [includeDirectories, setIncludeDirectories] = React.useState(true);
 
   const onClickDelete = React.useCallback(
     (index: number) => {
@@ -73,7 +73,7 @@ function Dashboard(args: Args) {
     invoke<Item[]>("scan_items", {
       items: args.items,
       depth,
-      includeDirectory,
+      includeDirectory: includeDirectories,
       extensions:
         filterByExtensions && args.config ? args.config.extensions : [],
     })
@@ -90,7 +90,7 @@ function Dashboard(args: Args) {
           type: NotificationType.Error,
         });
       });
-  }, [args.items, depth, includeDirectory, filterByExtensions, args.config]);
+  }, [args.items, depth, includeDirectories, filterByExtensions, args.config]);
 
   function onChangeDepth(event: React.ChangeEvent<HTMLInputElement>) {
     setDepth(Number(event.target.value));
@@ -102,10 +102,10 @@ function Dashboard(args: Args) {
     setFilterByExtensions(!filterByExtensions);
   }
 
-  function onChangeIncludeDirectory(
+  function onChangeIncludeDirectories(
     _event: React.ChangeEvent<HTMLInputElement>
   ) {
-    setIncludeDirectory(!includeDirectory);
+    setIncludeDirectories(!includeDirectories);
   }
 
   if (args.items.length > 0) {
@@ -125,11 +125,11 @@ function Dashboard(args: Args) {
             <FormControlLabel
               control={
                 <Checkbox
-                  checked={includeDirectory}
-                  onChange={onChangeIncludeDirectory}
+                  checked={includeDirectories}
+                  onChange={onChangeIncludeDirectories}
                 />
               }
-              label="Include Directory"
+              label="Include Directories"
             />
           </Tooltip>
           <Tooltip

@@ -27,6 +27,7 @@ static mut CONFIG: Lazy<Config> = Lazy::new(|| Config::new());
 #[derive(Debug, Clone, Deserialize, Serialize)]
 pub struct Config {
   pub extensions: Vec<String>,
+  pub plugins: Vec<ConfigPlugin>,
 }
 
 impl Default for Config {
@@ -37,6 +38,7 @@ impl Default for Config {
         .split(',')
         .map(|s| s.to_string())
         .collect(),
+      plugins: Default::default(),
     }
   }
 }
@@ -79,6 +81,13 @@ impl Config {
     let buf_writer = BufWriter::new(file);
     serde_json::to_writer_pretty(buf_writer, &self).map_err(Error::msg)
   }
+}
+
+#[derive(Debug, Clone, Deserialize, Serialize)]
+pub struct ConfigPlugin {
+  pub name: String,
+  pub description: String,
+  pub code: String,
 }
 
 pub fn get_config() -> Config {

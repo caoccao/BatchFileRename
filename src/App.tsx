@@ -68,13 +68,6 @@ function App() {
         !event.shiftKey
       ) {
         switch (event.key) {
-          case "1":
-          case "2":
-          case "3":
-          case "4":
-            event.preventDefault();
-            setTabIndex(Number(event.key) - 1);
-            break;
           case "F2":
             event.preventDefault();
             handleRename();
@@ -82,13 +75,13 @@ function App() {
           case "F8":
             event.preventDefault();
             handleClear();
-            return;
+            break;
           default:
             break;
         }
       } else if (
-        !event.altKey &&
         event.ctrlKey &&
+        !event.altKey &&
         !event.metaKey &&
         !event.shiftKey
       ) {
@@ -117,10 +110,10 @@ function App() {
             break;
         }
       } else if (
-        !event.altKey &&
         event.ctrlKey &&
-        !event.metaKey &&
-        event.shiftKey
+        event.shiftKey &&
+        !event.altKey &&
+        !event.metaKey
       ) {
         switch (event.key) {
           case "Tab":
