@@ -30,11 +30,18 @@ export interface Args {
 function ItemTypeIcon(args: Args) {
   switch (args.type) {
     case ItemType.Directory:
-      return <TopicOutlinedIcon sx={{ color: "primary.dark" }} />;
+      return (
+        <TopicOutlinedIcon fontSize="small" sx={{ color: "primary.dark" }} />
+      );
     case ItemType.File:
-      return <TextSnippetOutlinedIcon sx={{ color: "primary.light" }} />;
+      return (
+        <TextSnippetOutlinedIcon
+          fontSize="small"
+          sx={{ color: "primary.light" }}
+        />
+      );
     default:
-      return <HelpCenterOutlinedIcon />;
+      return <HelpCenterOutlinedIcon fontSize="small" htmlColor="gray" />;
   }
 }
 

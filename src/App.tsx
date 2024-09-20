@@ -41,7 +41,7 @@ import SourceEditor from "./SourceEditor";
 import Settings from "./Settings";
 import TargetEditor from "./TargetEditor";
 import Tools from "./Tools";
-import Unified from "./Unified";
+import Dashboard from "./Dashboard";
 
 function App() {
   const [config, setConfig] = React.useState<Config | null>(null);
@@ -139,9 +139,9 @@ function App() {
           aria-label="Batch File Rename"
         >
           <Tab
-            label="Unified"
-            id="tab-id-unified"
-            aria-controls="tab-control-unified"
+            label="Dashboard"
+            id="tab-id-dashboard"
+            aria-controls="tab-control-dashboard"
             sx={{ textTransform: "none" }}
           />
           <Tab
@@ -167,11 +167,11 @@ function App() {
         </Tabs>
       </Box>
       <div
-        id="tab-id-unified"
-        aria-labelledby="tab-control-unified"
+        id="tab-id-dashboard"
+        aria-labelledby="tab-control-dashboard"
         hidden={tabIndex !== 0}
       >
-        <Unified
+        <Dashboard
           config={config}
           items={items}
           setItems={setItems}

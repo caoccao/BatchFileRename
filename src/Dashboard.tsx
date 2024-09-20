@@ -20,15 +20,19 @@ import { invoke } from "@tauri-apps/api/tauri";
 import React from "react";
 
 import {
-  Description as DescriptionIcon,
+  DescriptionOutlined as DescriptionOutlinedIcon,
   DocumentScannerOutlined as DocumentScannerOutlinedIcon,
+  HighlightOffOutlined as HighlightOffOutlinedIcon,
   NumbersOutlined as NumbersOutlinedIcon,
+  RecyclingOutlined as RecyclingOutlinedIcon,
+  SaveAltOutlined as SaveAltOutlinedIcon,
 } from "@mui/icons-material";
 
 import {
   Button,
   Checkbox,
   FormControlLabel,
+  IconButton,
   Paper,
   Stack,
   Table,
@@ -52,10 +56,19 @@ export interface Args {
   setNotification: React.Dispatch<React.SetStateAction<Notification>>;
 }
 
-function Unified(args: Args) {
+function Dashboard(args: Args) {
   const [depth, setDepth] = React.useState(-1);
   const [filterByExtensions, setFilterByExtensions] = React.useState(true);
   const [includeDirectory, setIncludeDirectory] = React.useState(true);
+
+  const onClickDelete = React.useCallback(
+    (index: number) => {
+      if (index >= 0 && index < args.items.length) {
+        args.setItems(args.items.filter((_, i) => i !== index));
+      }
+    },
+    [args.items]
+  );
 
   const onClickScan = React.useCallback(() => {
     invoke<Item[]>("scan_items", {
@@ -154,13 +167,16 @@ function Unified(args: Args) {
             <TableHead>
               <TableRow>
                 <TableCell align="center" sx={{ width: 24, maxWidth: 24 }}>
-                  <NumbersOutlinedIcon />
+                  <NumbersOutlinedIcon fontSize="small" />
                 </TableCell>
                 <TableCell align="center" sx={{ width: 24, maxWidth: 24 }}>
-                  <DescriptionIcon />
+                  <DescriptionOutlinedIcon fontSize="small" />
                 </TableCell>
                 <TableCell>Source</TableCell>
                 <TableCell>Target</TableCell>
+                <TableCell align="center" sx={{ width: 24, maxWidth: 24 }}>
+                  <HighlightOffOutlinedIcon fontSize="small" />
+                </TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
@@ -172,6 +188,17 @@ function Unified(args: Args) {
                   </TableCell>
                   <TableCell>{item.sourcePath}</TableCell>
                   <TableCell>{item.targetPath}</TableCell>
+                  <TableCell align="center">
+                    <IconButton
+                      aria-label="Delete"
+                      color="primary"
+                      onClick={() => {
+                        onClickDelete(index);
+                      }}
+                    >
+                      <HighlightOffOutlinedIcon fontSize="small" />
+                    </IconButton>
+                  </TableCell>
                 </TableRow>
               ))}
             </TableBody>
@@ -181,11 +208,22 @@ function Unified(args: Args) {
     );
   } else {
     return (
-      <Typography variant="h4" sx={{ textAlign: "center", mt: 5, mb: 5 }}>
-        Please drag-and-drop files or folders here.
-      </Typography>
+      <Stack
+        spacing={2}
+        sx={{
+          justifyContent: "center",
+          alignItems: "center",
+          mt: "20px",
+          mb: "20px",
+        }}
+      >
+        <SaveAltOutlinedIcon htmlColor="gray" sx={{ fontSize: "96px" }} />
+        <Typography variant="h4" sx={{ textAlign: "center" }} color="gray">
+          Drop Files Here
+        </Typography>
+      </Stack>
     );
   }
 }
 
-export default Unified;
+export default Dashboard;
