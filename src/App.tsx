@@ -43,6 +43,8 @@ import TargetEditor from "./TargetEditor";
 import Tools from "./Tools";
 import Dashboard from "./Dashboard";
 
+const TAB_SIZE = 4;
+
 function App() {
   const [config, setConfig] = React.useState<Config | null>(null);
   const [notification, setNotification] = React.useState<Notification>({
@@ -52,6 +54,108 @@ function App() {
   const [items, setItems] = React.useState<Item[]>([]);
 
   const [tabIndex, setTabIndex] = React.useState(0);
+
+  const handleClear = React.useCallback(() => {
+    clear();
+  }, [items, notification]);
+
+  const handleKeyboardShortcuts = React.useCallback(
+    (event: KeyboardEvent) => {
+      if (
+        !event.altKey &&
+        !event.ctrlKey &&
+        !event.metaKey &&
+        !event.shiftKey
+      ) {
+        switch (event.key) {
+          case "1":
+          case "2":
+          case "3":
+          case "4":
+            event.preventDefault();
+            setTabIndex(Number(event.key) - 1);
+            break;
+          case "F2":
+            event.preventDefault();
+            handleRename();
+            break;
+          case "F8":
+            event.preventDefault();
+            handleClear();
+            return;
+          default:
+            break;
+        }
+      } else if (
+        !event.altKey &&
+        event.ctrlKey &&
+        !event.metaKey &&
+        !event.shiftKey
+      ) {
+        switch (event.key) {
+          case "1":
+          case "4":
+            event.preventDefault();
+            setTabIndex(Number(event.key) - 1);
+            break;
+          case "2":
+          case "3":
+            event.preventDefault();
+            if (items.length > 0) {
+              setTabIndex(Number(event.key) - 1);
+            }
+            break;
+          case "Tab":
+            let index = 0;
+            if (items.length > 0) {
+              index = tabIndex + 1;
+            } else {
+              index = tabIndex == 0 ? 3 : 0;
+            }
+            index = index % TAB_SIZE;
+            setTabIndex(index);
+            break;
+        }
+      } else if (
+        !event.altKey &&
+        event.ctrlKey &&
+        !event.metaKey &&
+        event.shiftKey
+      ) {
+        switch (event.key) {
+          case "Tab":
+            let index = 0;
+            if (items.length > 0) {
+              index = tabIndex - 1;
+            } else {
+              index = tabIndex == 0 ? 3 : 0;
+            }
+            if (index < 0) {
+              index += TAB_SIZE;
+            }
+            setTabIndex(index);
+            break;
+        }
+      }
+    },
+    [items, notification, tabIndex]
+  );
+
+  const handleRename = React.useCallback(() => {
+    invoke<number>("rename_items", { items })
+      .then((value) => {
+        setNotification({
+          message: `Renamed ${value} item(s) successfully`,
+          type: NotificationType.Info,
+        });
+      })
+      .catch((error) => {
+        setNotification({
+          message: `${error}`,
+          type: NotificationType.Error,
+        });
+      });
+  }, [items, notification]);
 
   const onChangeTabIndex = (
     _event: React.SyntheticEvent,
@@ -103,12 +207,14 @@ function App() {
           type: NotificationType.Error,
         });
       });
+    document.addEventListener("keydown", handleKeyboardShortcuts);
     return () => {
       if (cancelFileDrop) {
         cancelFileDrop();
       }
+      document.removeEventListener("keydown", handleKeyboardShortcuts);
     };
-  }, []);
+  }, [items, notification, tabIndex]);
 
   function clear() {
     clearNotification();

@@ -91,6 +91,7 @@ pub async fn rename_items(items: Vec<protocol::Item>) -> Result<usize> {
         target_path: Path::new(item.target_path.as_str()).to_str().unwrap().to_string(),
         item_type: item.item_type,
       })
+      .filter(|item| item.source_path != item.target_path)
       .collect();
     // Step 2: Check duplicated source and target paths.
     let mut source_path_set: HashSet<String> = HashSet::new();
