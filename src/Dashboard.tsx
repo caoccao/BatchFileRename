@@ -161,7 +161,10 @@ function Dashboard(args: Args) {
             />
           </Tooltip>
         </Stack>
-        <TableContainer component={Paper}>
+        <TableContainer
+          component={Paper}
+          sx={{ minHeight: "calc(100vh - 220px)" }}
+        >
           <Table size="small">
             <TableHead>
               <TableRow>
@@ -209,6 +212,7 @@ function Dashboard(args: Args) {
     return (
       <Stack
         spacing={2}
+        height={"calc(100vh - 200px)"}
         sx={{
           justifyContent: "center",
           alignItems: "center",

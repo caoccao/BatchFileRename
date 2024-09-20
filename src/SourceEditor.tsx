@@ -63,7 +63,7 @@ function SourceEditor(args: Args) {
         </Button>
       </Stack>
       <Editor
-        height="75vh"
+        height="calc(100vh - 200px)"
         language="plaintext"
         onMount={onMountEditor}
         defaultValue=""

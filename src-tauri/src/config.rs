@@ -33,10 +33,10 @@ pub struct Config {
 impl Default for Config {
   fn default() -> Self {
     Self {
-      extensions: "mp3,mp4,avi,flv,mkv,ogg,webm,wmv,ape,mp3,aac,flac"
+      extensions: "mp3,mp4,avi,flv,mkv,ogg,webm,wmv,ape,mp3,aac,flac,mka,m4a"
         .to_string()
         .split(',')
-        .map(|s| s.to_string())
+        .map(|s| s.trim().to_string())
         .collect(),
       plugins: Default::default(),
     }

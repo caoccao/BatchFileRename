@@ -161,7 +161,7 @@ function Settings(args: Args) {
 
   return (
     <React.Fragment>
-      <Stack spacing={2}>
+      <Stack spacing={2} sx={{ minHeight: "calc(100vh - 165px)" }}>
         <Card>
           <CardHeader
             title="Scan"
@@ -276,7 +276,7 @@ function Settings(args: Args) {
             >
               <legend style={{ fontFamily: "roboto" }}>Code *</legend>
               <Editor
-                height="40vh"
+                height="calc(100vh - 440px)"
                 language="javascript"
                 onMount={onMountEditor}
                 defaultValue=""
