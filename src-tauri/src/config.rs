@@ -95,9 +95,16 @@ impl Config {
 
 #[derive(Debug, Clone, Deserialize, Serialize)]
 pub struct ConfigPlugin {
-  pub name: String,
-  pub description: String,
   pub code: String,
+  pub description: String,
+  pub name: String,
+  pub options: Vec<ConfigPluginOption>,
+}
+
+#[derive(Debug, Clone, Deserialize, Serialize)]
+pub struct ConfigPluginOption {
+  pub default_value: String,
+  pub name: String,
 }
 
 pub fn get_config() -> Config {
