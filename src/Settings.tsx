@@ -83,6 +83,7 @@ function Settings(args: Args) {
   const [plugins, setPlugins] = React.useState<ConfigPlugin[]>([]);
   const [pluginCode, setPluginCode] = React.useState("");
   const [pluginDescription, setPluginDescription] = React.useState("");
+  const [pluginDirty, setPluginDirty] = React.useState(false);
   const [pluginIndex, setPluginIndex] = React.useState(-1);
   const [pluginName, setPluginName] = React.useState("");
   const [pluginOptions, setPluginOptions] = React.useState<
@@ -110,12 +111,12 @@ function Settings(args: Args) {
     _value: string | undefined,
     _event: editor.IModelContentChangedEvent
   ) {
-    setDirty(true);
+    setPluginDirty(true);
   }
 
   const onChangePluginDescription = React.useCallback(
     (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-      setDirty(true);
+      setPluginDirty(true);
       setPluginDescription(event.target.value);
     },
     [pluginDescription]
@@ -123,7 +124,7 @@ function Settings(args: Args) {
 
   const onChangePluginName = React.useCallback(
     (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-      setDirty(true);
+      setPluginDirty(true);
       setPluginName(event.target.value);
     },
     [pluginName]
@@ -135,7 +136,7 @@ function Settings(args: Args) {
       index: number
     ) => {
       if (index >= 0 && index < pluginOptions.length) {
-        setDirty(true);
+        setPluginDirty(true);
         setPluginOptions([
           ...pluginOptions.slice(0, index),
           { ...pluginOptions[index], defaultValue: event.target.value },
@@ -152,7 +153,7 @@ function Settings(args: Args) {
       index: number
     ) => {
       if (index >= 0 && index < pluginOptions.length) {
-        setDirty(true);
+        setPluginDirty(true);
         setPluginOptions([
           ...pluginOptions.slice(0, index),
           { ...pluginOptions[index], name: event.target.value },
@@ -188,7 +189,6 @@ function Settings(args: Args) {
     setPluginName("");
     setPluginOptions([]);
     setDialogPluginOpen(true);
-    setDirty(false);
     args.setGlobalKeyboardShortcutsEnabled(false);
   }
 
@@ -219,7 +219,7 @@ function Settings(args: Args) {
         setPluginIndex(index);
         setPluginName(plugins[index].name);
         setPluginOptions(plugins[index].options);
-        setDirty(false);
+        setPluginDirty(false);
         setDialogPluginOpen(true);
       }
     },
@@ -228,7 +228,7 @@ function Settings(args: Args) {
 
   function onClickButtonInsertArgument(argumentName: string) {
     if (monacoEditor) {
-      setDirty(true);
+      setPluginDirty(true);
       monacoEditor.trigger("keyboard", "type", { text: argumentName });
     }
   }
@@ -256,7 +256,7 @@ function Settings(args: Args) {
   const onClickDialogPluginButtonCancel = React.useCallback(
     async (_event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
       let confirmed = true;
-      if (dirty) {
+      if (pluginDirty) {
         confirmed = await confirm(
           "Are you sure you want to discard your changes?",
           {
@@ -268,10 +268,10 @@ function Settings(args: Args) {
       if (confirmed) {
         setDialogPluginOpen(false);
         args.setGlobalKeyboardShortcutsEnabled(true);
-        setDirty(false);
+        setPluginDirty(false);
       }
     },
-    [dirty]
+    [pluginDirty]
   );
 
   function onClickDialogPluginVimMode() {
@@ -310,6 +310,8 @@ function Settings(args: Args) {
       } else {
         setPlugins([...plugins, plugin]);
       }
+      setPluginDirty(false);
+      setDirty(true);
       setDialogPluginOpen(false);
       args.setGlobalKeyboardShortcutsEnabled(true);
     },
@@ -447,7 +449,11 @@ function Settings(args: Args) {
         }}
         sx={{ maxHeight: "calc(100vh - 50px)" }}
       >
-        <DialogTitle id="plugin-dialog-title">Create a New Plugin</DialogTitle>
+        <DialogTitle id="plugin-dialog-title">
+          {pluginIndex >= 0
+            ? `Edit Plugin: ${pluginName}`
+            : "Create a New Plugin"}
+        </DialogTitle>
         <DialogContent>
           <Stack spacing={2} sx={{ mt: "10px" }}>
             <TextField
