@@ -16,7 +16,10 @@
  */
 
 export interface Config {
+  depth: number,
   extensions: string[];
+  filterByExtensions: boolean;
+  includeDirectories: boolean;
   plugins: ConfigPlugin[];
 }
 

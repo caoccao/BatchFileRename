@@ -32,10 +32,12 @@ import {
   CardActions,
   CardHeader,
   CardContent,
+  Checkbox,
   Dialog,
   DialogActions,
   DialogContent,
   DialogTitle,
+  FormControlLabel,
   IconButton,
   Paper,
   Stack,
@@ -46,6 +48,7 @@ import {
   TableHead,
   TableRow,
   TextField,
+  Tooltip,
 } from "@mui/material";
 import {
   AddBoxOutlined as AddBoxOutlinedIcon,
@@ -75,9 +78,12 @@ interface Args {
 }
 
 function Settings(args: Args) {
+  const [depth, setDepth] = React.useState(-1);
   const [dirty, setDirty] = React.useState(false);
   const [dialogPluginOpen, setDialogPluginOpen] = React.useState(false);
   const [extensionText, setExtensionText] = React.useState("");
+  const [filterByExtensions, setFilterByExtensions] = React.useState(true);
+  const [includeDirectories, setIncludeDirectories] = React.useState(false);
   const [monacoEditor, setMonacoEditor] =
     React.useState<editor.IStandaloneCodeEditor | null>(null);
   const [plugins, setPlugins] = React.useState<ConfigPlugin[]>([]);
@@ -93,21 +99,68 @@ function Settings(args: Args) {
   >([]);
   const [vim, setVim] = React.useState<any>(null);
 
-  function onBlurExtensions(_event: React.FocusEvent<HTMLInputElement>) {
-    const extensions = extensionText
-      .split(",")
-      .map((e) => e.trim())
-      .filter((e) => e.length > 0);
-    args.setConfig({
-      extensions,
-      plugins,
-    });
-  }
+  const onBlurExtensions = React.useCallback(
+    (_event: React.FocusEvent<HTMLInputElement>) => {
+      setConfig(
+        depth,
+        extensionText,
+        filterByExtensions,
+        includeDirectories,
+        plugins
+      );
+    },
+    [depth, extensionText, filterByExtensions, includeDirectories, plugins]
+  );
+
+  const onChangeDepth = React.useCallback(
+    (event: React.ChangeEvent<HTMLInputElement>) => {
+      const newDepth = Number(event.target.value);
+      setDepth(newDepth);
+      setConfig(
+        newDepth,
+        extensionText,
+        filterByExtensions,
+        includeDirectories,
+        plugins
+      );
+    },
+    [depth, extensionText, filterByExtensions, includeDirectories, plugins]
+  );
 
   function onChangeExtensionText(e: React.ChangeEvent<HTMLInputElement>) {
     setDirty(true);
     setExtensionText(e.target.value);
   }
+
+  const onChangeFilterByExtensions = React.useCallback(
+    (_event: React.ChangeEvent<HTMLInputElement>) => {
+      const newFilterByExtensions = !filterByExtensions;
+      setFilterByExtensions(newFilterByExtensions);
+      setConfig(
+        depth,
+        extensionText,
+        newFilterByExtensions,
+        includeDirectories,
+        plugins
+      );
+    },
+    [depth, extensionText, filterByExtensions, includeDirectories, plugins]
+  );
+
+  const onChangeIncludeDirectories = React.useCallback(
+    (_event: React.ChangeEvent<HTMLInputElement>) => {
+      const newIncludeDirectories = !includeDirectories;
+      setIncludeDirectories(newIncludeDirectories);
+      setConfig(
+        depth,
+        extensionText,
+        filterByExtensions,
+        newIncludeDirectories,
+        plugins
+      );
+    },
+    [depth, extensionText, filterByExtensions, includeDirectories, plugins]
+  );
 
   function onChangePluginCode(
     _value: string | undefined,
@@ -306,38 +359,72 @@ function Settings(args: Args) {
           name: pluginName,
           options: pluginOptions,
         };
-        if (pluginIndex >= 0) {
-          setPlugins([
-            ...plugins.slice(0, pluginIndex),
-            plugin,
-            ...plugins.slice(pluginIndex + 1),
-          ]);
-        } else {
-          setPlugins([...plugins, plugin]);
-        }
+        const newPlugins =
+          pluginIndex >= 0
+            ? [
+                ...plugins.slice(0, pluginIndex),
+                plugin,
+                ...plugins.slice(pluginIndex + 1),
+              ]
+            : [...plugins, plugin];
+        setPlugins(newPlugins);
         setPluginDirty(false);
-        setDirty(true);
         setPluginCodeErrorMessage("");
         setDialogPluginOpen(false);
+        setConfig(
+          depth,
+          extensionText,
+          filterByExtensions,
+          includeDirectories,
+          newPlugins
+        );
         args.setGlobalKeyboardShortcutsEnabled(true);
       } else {
         setPluginCodeErrorMessage("Please fill in the code.");
       }
     },
     [
+      depth,
+      extensionText,
+      filterByExtensions,
+      includeDirectories,
       monacoEditor,
+      plugins,
       pluginCode,
       pluginDescription,
       pluginIndex,
       pluginName,
       pluginOptions,
-      plugins,
     ]
   );
 
+  function setConfig(
+    depth: number,
+    extensionText: string,
+    filterByExtensions: boolean,
+    includeDirectories: boolean,
+    plugins: ConfigPlugin[]
+  ) {
+    const extensions = extensionText
+      .split(",")
+      .map((e) => e.trim())
+      .filter((e) => e.length > 0);
+    const config = {
+      depth,
+      extensions,
+      filterByExtensions,
+      includeDirectories,
+      plugins,
+    };
+    args.setConfig(config);
+    setDirty(true);
+  }
+
   React.useEffect(() => {
     if (args.config) {
+      setDepth(args.config.depth);
       setExtensionText(args.config.extensions.join(", "));
+      setIncludeDirectories(args.config.includeDirectories);
       setPlugins(args.config.plugins);
     }
   }, [args.config]);
@@ -352,14 +439,69 @@ function Settings(args: Args) {
             sx={{ pt: "10px", pb: "0px" }}
           />
           <CardContent>
-            <TextField
-              label="Extensions"
-              fullWidth
-              size="small"
-              value={extensionText}
-              onChange={onChangeExtensionText}
-              onBlur={onBlurExtensions}
-            />
+            <Stack spacing={2}>
+              <fieldset
+                style={{ borderRadius: "5px", border: "1px solid lightgray" }}
+              >
+                <legend
+                  style={{
+                    padding: "0px 5px",
+                    color: "gray",
+                    fontFamily: "roboto",
+                    fontSize: "12px",
+                  }}
+                >
+                  Default
+                </legend>
+                <Tooltip
+                  arrow
+                  title="Include the directories in the source items."
+                >
+                  <FormControlLabel
+                    control={
+                      <Checkbox
+                        checked={includeDirectories}
+                        onChange={onChangeIncludeDirectories}
+                      />
+                    }
+                    label="Include Directories"
+                  />
+                </Tooltip>
+                <Tooltip
+                  arrow
+                  title="Scan the directories recursively by the given depth. -1 means no limit."
+                >
+                  <TextField
+                    type="number"
+                    label="Depth"
+                    variant="outlined"
+                    value={depth}
+                    onChange={onChangeDepth}
+                    size="small"
+                    sx={{ width: "70px", mr: "20px" }}
+                  />
+                </Tooltip>
+                <Tooltip arrow title="Filter by extensions">
+                  <FormControlLabel
+                    control={
+                      <Checkbox
+                        checked={filterByExtensions}
+                        onChange={onChangeFilterByExtensions}
+                      />
+                    }
+                    label="Filter by Extensions"
+                  />
+                </Tooltip>
+              </fieldset>
+              <TextField
+                label="Extensions"
+                fullWidth
+                size="small"
+                value={extensionText}
+                onChange={onChangeExtensionText}
+                onBlur={onBlurExtensions}
+              />
+            </Stack>
           </CardContent>
         </Card>
         <Card>

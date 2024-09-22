@@ -26,18 +26,26 @@ static mut CONFIG: Lazy<Config> = Lazy::new(|| Config::new());
 
 #[derive(Debug, Clone, Deserialize, Serialize)]
 pub struct Config {
+  pub depth: i32,
   pub extensions: Vec<String>,
+  #[serde(rename = "filterByExtensions")]
+  pub filter_by_extensions: bool,
+  #[serde(rename = "includeDirectories")]
+  pub include_directories: bool,
   pub plugins: Vec<ConfigPlugin>,
 }
 
 impl Default for Config {
   fn default() -> Self {
     Self {
+      depth: -1,
       extensions: "mp3,mp4,avi,flv,mkv,ogg,webm,wmv,ape,mp3,aac,flac,mka,m4a"
         .to_string()
         .split(',')
         .map(|s| s.trim().to_string())
         .collect(),
+      filter_by_extensions: true,
+      include_directories: false,
       plugins: Default::default(),
     }
   }

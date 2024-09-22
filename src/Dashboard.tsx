@@ -56,9 +56,11 @@ export interface Args {
 }
 
 function Dashboard(args: Args) {
-  const [depth, setDepth] = React.useState(-1);
+  const [depth, setDepth] = React.useState<number | null>(null);
   const [filterByExtensions, setFilterByExtensions] = React.useState(true);
-  const [includeDirectories, setIncludeDirectories] = React.useState(true);
+  const [includeDirectories, setIncludeDirectories] = React.useState<
+    boolean | null
+  >(null);
 
   const onClickDelete = React.useCallback(
     (index: number) => {
@@ -72,8 +74,9 @@ function Dashboard(args: Args) {
   const onClickScan = React.useCallback(() => {
     invoke<Item[]>("scan_items", {
       items: args.items,
-      depth,
-      includeDirectory: includeDirectories,
+      depth: depth === null ? -1 : depth,
+      includeDirectory:
+        includeDirectories === null ? false : includeDirectories,
       extensions:
         filterByExtensions && args.config ? args.config.extensions : [],
     })
@@ -105,8 +108,18 @@ function Dashboard(args: Args) {
   function onChangeIncludeDirectories(
     _event: React.ChangeEvent<HTMLInputElement>
   ) {
-    setIncludeDirectories(!includeDirectories);
+    if (includeDirectories !== null) {
+      setIncludeDirectories(!includeDirectories);
+    }
   }
+
+  React.useEffect(() => {
+    if (args.config) {
+      if (includeDirectories === null) {
+        setIncludeDirectories(args.config.includeDirectories);
+      }
+    }
+  }, [args.config]);
 
   if (args.items.length > 0) {
     return (
@@ -121,11 +134,13 @@ function Dashboard(args: Args) {
           >
             Scan
           </Button>
-          <Tooltip arrow title="Scan the directories.">
+          <Tooltip arrow title="Include the directories in the source items.">
             <FormControlLabel
               control={
                 <Checkbox
-                  checked={includeDirectories}
+                  checked={
+                    includeDirectories === null ? false : includeDirectories
+                  }
                   onChange={onChangeIncludeDirectories}
                 />
               }
@@ -140,7 +155,7 @@ function Dashboard(args: Args) {
               type="number"
               label="Depth"
               variant="outlined"
-              value={depth}
+              value={depth === null ? -1 : depth}
               onChange={onChangeDepth}
               size="small"
               sx={{ width: "70px" }}
