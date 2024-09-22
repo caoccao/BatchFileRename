@@ -1,21 +1,33 @@
+import { assert } from "./utils.js";
 import { dotify } from "./plugin-dotify.js";
 
 const options = {
   $pathSeparator: "/",
 };
 let targetItems = [];
+let message;
 
+message = JSON.stringify(targetItems);
 dotify([], targetItems, options);
-if (targetItems.length == 0) {
-  console.info("✅ Empty target items passed.");
-} else {
-  console.error("❌ Empty target items failed.");
-}
+assert(targetItems.length == 0, message);
 
-targetItems = ["/test/a b c.x"];
+targetItems = [{ targetPath: "/test/a b c.x" }];
+message = JSON.stringify(targetItems);
 dotify([], targetItems, options);
-if (targetItems[0] === "/test/A.B.C.x") {
-  console.info(`✅ ${targetItems} passed.`);
-} else {
-  console.error(`❌ ${targetItems} failed.`);
-}
+assert(targetItems[0] === "/test/A.B.C.x", message);
+
+targetItems = [{ targetPath: "/test/a &b&c.x" }];
+message = JSON.stringify(targetItems);
+dotify([], targetItems, options);
+assert(targetItems[0] === "/test/A.and.B.and.C.x", message);
+
+targetItems = [{ targetPath: "/test/abc,=,def.x" }];
+message = JSON.stringify(targetItems);
+dotify([], targetItems, options);
+assert(targetItems[0] === "/test/Abc.Def.x", message);
+
+targetItems = [{ targetPath: "/test/aBC,OF,dEF.x" }];
+message = JSON.stringify(targetItems);
+dotify([], targetItems, options);
+assert(targetItems[0] === "/test/ABC.of.DEF.x", message);
+

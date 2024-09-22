@@ -40,21 +40,29 @@ export function dotify(sourceItems, targetItems, options) {
     "with",
     "without",
   ]);
+  const specialWordReplacementMap = new Map([
+    ["&", "and"],
+  ]);
   const length = targetItems.length;
   for (let i = 0; i < length; ++i) {
-    const targetItem = targetItems[i];
-    const indexOfLastPathSeparator = targetItem.lastIndexOf(
+    const targetPath = targetItems[i].targetPath;
+    const indexOfLastPathSeparator = targetPath.lastIndexOf(
       options.$pathSeparator
     );
     if (indexOfLastPathSeparator >= 0) {
-      const parentPath = targetItem.substring(0, indexOfLastPathSeparator + 1);
-      const nameAndExt = targetItem.substring(indexOfLastPathSeparator + 1);
+      const parentPath = targetPath.substring(0, indexOfLastPathSeparator + 1);
+      const nameAndExt = targetPath.substring(indexOfLastPathSeparator + 1);
       const indexOfLastDot = nameAndExt.lastIndexOf(".");
       if (indexOfLastDot > 0) {
         const name = nameAndExt.substring(0, indexOfLastDot);
         const extWithDot = nameAndExt.substring(indexOfLastDot);
-        const newName = name
-          .split(/[\s\.,:;\-_\+=\[\]\{\}'"~`!@#$%\^&\*\?\<\>]+/)
+        let newName = name;
+        [...specialWordReplacementMap.keys()].forEach((key) => {
+          newName = newName.replaceAll(key, ` ${key} `);
+        })
+        newName = newName
+          .split(/[\s\.,:;\-_\+=\[\]\{\}'"~`!@#$%\^\*\?\<\>]+/)
+          .filter((word) => word.length > 0)
           .map((word, index) => {
             if (index == 0) {
               return word[0].toUpperCase() + word.substring(1);
@@ -67,6 +75,8 @@ export function dotify(sourceItems, targetItems, options) {
                 } else if (word[0].toLowerCase() === word[0]) {
                   return word[0].toUpperCase() + word.substring(1);
                 }
+              } else if (specialWordReplacementMap.has(word)) {
+                return specialWordReplacementMap.get(word);
               }
             }
             return word;
