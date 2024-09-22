@@ -481,7 +481,7 @@ function Settings(args: Args) {
                     sx={{ width: "70px", mr: "20px" }}
                   />
                 </Tooltip>
-                <Tooltip arrow title="Filter by extensions">
+                <Tooltip arrow title={`Filter by ${extensionText}.`}>
                   <FormControlLabel
                     control={
                       <Checkbox
