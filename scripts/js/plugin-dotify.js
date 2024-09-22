@@ -82,7 +82,7 @@ export function dotify(sourceItems, targetItems, options) {
             return word;
           })
           .join(".");
-        targetItems[i] = `${parentPath}${newName}${extWithDot}`;
+        targetItems[i].targetPath = `${parentPath}${newName}${extWithDot}`;
       }
     }
   }
