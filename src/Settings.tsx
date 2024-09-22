@@ -82,6 +82,8 @@ function Settings(args: Args) {
     React.useState<editor.IStandaloneCodeEditor | null>(null);
   const [plugins, setPlugins] = React.useState<ConfigPlugin[]>([]);
   const [pluginCode, setPluginCode] = React.useState("");
+  const [pluginCodeErrorMessage, setPluginCodeErrorMessage] =
+    React.useState("");
   const [pluginDescription, setPluginDescription] = React.useState("");
   const [pluginDirty, setPluginDirty] = React.useState(false);
   const [pluginIndex, setPluginIndex] = React.useState(-1);
@@ -266,6 +268,7 @@ function Settings(args: Args) {
         );
       }
       if (confirmed) {
+        setPluginCodeErrorMessage("");
         setDialogPluginOpen(false);
         args.setGlobalKeyboardShortcutsEnabled(true);
         setPluginDirty(false);
@@ -295,25 +298,31 @@ function Settings(args: Args) {
   const onSubmitDialogPlugin = React.useCallback(
     (event: React.FormEvent<HTMLFormElement>) => {
       event.preventDefault();
-      const plugin: ConfigPlugin = {
-        code: monacoEditor?.getValue() as string,
-        description: pluginDescription,
-        name: pluginName,
-        options: pluginOptions,
-      };
-      if (pluginIndex >= 0) {
-        setPlugins([
-          ...plugins.slice(0, pluginIndex),
-          plugin,
-          ...plugins.slice(pluginIndex + 1),
-        ]);
+      const code = monacoEditor?.getValue().trim();
+      if (code && code !== "") {
+        const plugin: ConfigPlugin = {
+          code,
+          description: pluginDescription,
+          name: pluginName,
+          options: pluginOptions,
+        };
+        if (pluginIndex >= 0) {
+          setPlugins([
+            ...plugins.slice(0, pluginIndex),
+            plugin,
+            ...plugins.slice(pluginIndex + 1),
+          ]);
+        } else {
+          setPlugins([...plugins, plugin]);
+        }
+        setPluginDirty(false);
+        setDirty(true);
+        setPluginCodeErrorMessage("");
+        setDialogPluginOpen(false);
+        args.setGlobalKeyboardShortcutsEnabled(true);
       } else {
-        setPlugins([...plugins, plugin]);
+        setPluginCodeErrorMessage("Please fill in the code.");
       }
-      setPluginDirty(false);
-      setDirty(true);
-      setDialogPluginOpen(false);
-      args.setGlobalKeyboardShortcutsEnabled(true);
     },
     [
       monacoEditor,
@@ -595,12 +604,14 @@ function Settings(args: Args) {
               <legend
                 style={{
                   padding: "0px 5px",
-                  color: "gray",
+                  color: pluginCodeErrorMessage === "" ? "gray" : "red",
                   fontFamily: "roboto",
                   fontSize: "12px",
                 }}
               >
-                Code *
+                {pluginCodeErrorMessage === ""
+                  ? "Code *"
+                  : `Code * (${pluginCodeErrorMessage})`}
               </legend>
               <Editor
                 height="calc(100vh - 400px)"

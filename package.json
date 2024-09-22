@@ -20,7 +20,8 @@
     "monaco-editor": "0.49.0",
     "monaco-vim": "^0.4.1",
     "react": "^18.2.0",
-    "react-dom": "^18.2.0"
+    "react-dom": "^18.2.0",
+    "react-draggable": "^4.4.6"
   },
   "devDependencies": {
     "@tauri-apps/cli": "^1",
