@@ -98,7 +98,6 @@ export function dotify(sourceItems, targetItems, options) {
             return word;
           })
           .join(".");
-        console.log(newName);
         targetItems[i].targetPath = `${parentPath}${newName}${extWithDot}`;
       }
     }

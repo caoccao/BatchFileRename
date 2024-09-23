@@ -11,8 +11,12 @@ export function assert(condition, message) {
 }
 
 export function assertPlugin(plugin, path, expectedPath) {
-  const targetItems = [{ targetPath: path }];
+  const targetItems = path ? [{ targetPath: path }] : [];
   const message = JSON.stringify(targetItems);
   plugin([], targetItems, options);
-  assert(targetItems[0].targetPath === expectedPath, message);
+  if (expectedPath) {
+    assert(targetItems[0].targetPath === expectedPath, message);
+  } else {
+    assert(targetItems.length == 0, message);
+  }
 }
