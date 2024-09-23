@@ -24,7 +24,9 @@ use crate::config;
 use crate::protocol;
 
 pub async fn get_config() -> Result<config::Config> {
-  Ok(config::get_config())
+  let config = config::get_config();
+  // TODO
+  Ok(config)
 }
 
 fn recursive_scan_items(

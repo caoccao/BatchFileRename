@@ -116,7 +116,7 @@ pub struct ConfigPluginOption {
 }
 
 pub fn get_config() -> Config {
-  unsafe { CONFIG.to_owned() }
+  unsafe { CONFIG.clone() }
 }
 
 pub fn set_config(config: Config) -> Result<()> {

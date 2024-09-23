@@ -3,6 +3,7 @@
 
 mod config;
 mod controller;
+mod plugins;
 mod protocol;
 
 fn convert_error(error: anyhow::Error) -> String {

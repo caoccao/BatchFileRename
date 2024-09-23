@@ -4,6 +4,7 @@ export function dotify(sourceItems, targetItems, options) {
     "about",
     "above",
     "across",
+    "and",
     "after",
     "around",
     "as",
@@ -22,10 +23,12 @@ export function dotify(sourceItems, targetItems, options) {
     "into",
     "like",
     "near",
+    "not",
     "of",
     "off",
     "on",
     "onto",
+    "or",
     "out",
     "since",
     "than",
@@ -40,9 +43,7 @@ export function dotify(sourceItems, targetItems, options) {
     "with",
     "without",
   ]);
-  const specialWordReplacementMap = new Map([
-    ["&", "and"],
-  ]);
+  const specialWordReplacementMap = new Map([["&", "and"]]);
   const length = targetItems.length;
   for (let i = 0; i < length; ++i) {
     const targetPath = targetItems[i].targetPath;
@@ -56,12 +57,27 @@ export function dotify(sourceItems, targetItems, options) {
       if (indexOfLastDot > 0) {
         const name = nameAndExt.substring(0, indexOfLastDot);
         const extWithDot = nameAndExt.substring(indexOfLastDot);
-        let newName = name;
-        [...specialWordReplacementMap.keys()].forEach((key) => {
-          newName = newName.replaceAll(key, ` ${key} `);
-        })
-        newName = newName
-          .split(/[\s\.,:;\-_\+=\[\]\{\}'"~`!@#$%\^\*\?\<\>]+/)
+        const words = [];
+        let position = 0;
+        for (const match of [
+          ...name.matchAll(/[\s\.,:;\-_\+=\[\]\(\)\{\}'"&~`!@#$%\^\*\?\<\>]+/g),
+        ]) {
+          if (match.index > position) {
+            words.push(name.substring(position, match.index));
+          }
+          const word = match[0];
+          position = match.index + word.length;
+          for (const entry of [...specialWordReplacementMap.entries()]) {
+            if (word.includes(entry[0])) {
+              words.push(entry[1]);
+              break;
+            }
+          }
+        }
+        if (position < name.length) {
+          words.push(name.substring(position));
+        }
+        const newName = words
           .filter((word) => word.length > 0)
           .map((word, index) => {
             if (index == 0) {
@@ -82,6 +98,7 @@ export function dotify(sourceItems, targetItems, options) {
             return word;
           })
           .join(".");
+        console.log(newName);
         targetItems[i].targetPath = `${parentPath}${newName}${extWithDot}`;
       }
     }
