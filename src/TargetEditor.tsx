@@ -44,6 +44,7 @@ import { editor } from "monaco-editor";
 import { initVimMode } from "monaco-vim";
 
 import { Config, Item, Notification, NotificationType } from "./lib/Protocol";
+import { runPlugin } from "./lib/PluginRunner";
 
 export interface Args {
   config: Config | null;
@@ -91,7 +92,24 @@ function TargetEditor(args: Args) {
   }
 
   function onClickRunPlugin() {
-    console.log(`Running plugin ${args.config?.plugins[pluginIndex].name}.`);
+    const plugin = args.config?.plugins[pluginIndex];
+    if (plugin && monacoEditor) {
+      try {
+        args.setNotification({
+          message: "",
+          type: NotificationType.None,
+        });
+        monacoEditor.setValue(
+          runPlugin(plugin, args.items, monacoEditor.getValue())
+        );
+        onClickSave();
+      } catch (error) {
+        args.setNotification({
+          message: `${error}`,
+          type: NotificationType.Error,
+        });
+      }
+    }
   }
 
   const onClickSave = React.useCallback(() => {
