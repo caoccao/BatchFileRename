@@ -650,33 +650,50 @@ function Settings(args: Args) {
                 Arguments
               </legend>
               <Stack direction="row" spacing={2}>
-                <Button
-                  variant="outlined"
-                  sx={{ textTransform: "none" }}
-                  onClick={() => {
-                    onClickButtonInsertArgument("$sourceItems");
-                  }}
-                >
-                  Insert $sourceItems
-                </Button>
-                <Button
-                  variant="outlined"
-                  sx={{ textTransform: "none" }}
-                  onClick={() => {
-                    onClickButtonInsertArgument("$targetItems");
-                  }}
-                >
-                  Insert $targetItems
-                </Button>
-                <Button
-                  variant="outlined"
-                  sx={{ textTransform: "none" }}
-                  onClick={() => {
-                    onClickButtonInsertArgument("$options");
-                  }}
-                >
-                  Insert $options
-                </Button>
+                <Tooltip arrow title="Insert $sourceItems">
+                  <Button
+                    variant="outlined"
+                    sx={{ textTransform: "none" }}
+                    onClick={() => {
+                      onClickButtonInsertArgument("$sourceItems");
+                    }}
+                  >
+                    $sourceItems
+                  </Button>
+                </Tooltip>
+                <Tooltip arrow title="Insert $targetItems">
+                  <Button
+                    variant="outlined"
+                    sx={{ textTransform: "none" }}
+                    onClick={() => {
+                      onClickButtonInsertArgument("$targetItems");
+                    }}
+                  >
+                    $targetItems
+                  </Button>
+                </Tooltip>
+                <Tooltip arrow title="Insert $options">
+                  <Button
+                    variant="outlined"
+                    sx={{ textTransform: "none" }}
+                    onClick={() => {
+                      onClickButtonInsertArgument("$options");
+                    }}
+                  >
+                    $options
+                  </Button>
+                </Tooltip>
+                <Tooltip arrow title="Insert $modules">
+                  <Button
+                    variant="outlined"
+                    sx={{ textTransform: "none" }}
+                    onClick={() => {
+                      onClickButtonInsertArgument("$modules");
+                    }}
+                  >
+                    $modules
+                  </Button>
+                </Tooltip>
                 <Button
                   variant="outlined"
                   startIcon={<AddBoxOutlinedIcon />}

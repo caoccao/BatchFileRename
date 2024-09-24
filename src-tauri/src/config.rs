@@ -22,6 +22,8 @@ use std::fs::File;
 use std::io::{BufReader, BufWriter};
 use std::path::PathBuf;
 
+use crate::plugins;
+
 static mut CONFIG: Lazy<Config> = Lazy::new(|| Config::new());
 
 #[derive(Debug, Clone, Deserialize, Serialize)]
@@ -46,7 +48,7 @@ impl Default for Config {
         .collect(),
       filter_by_extensions: true,
       include_directories: false,
-      plugins: Default::default(),
+      plugins: plugins::BUILT_IN_PLUGINS.to_vec(),
     }
   }
 }
@@ -111,6 +113,7 @@ pub struct ConfigPlugin {
 
 #[derive(Debug, Clone, Deserialize, Serialize)]
 pub struct ConfigPluginOption {
+  #[serde(rename = "defaultValue")]
   pub default_value: String,
   pub name: String,
 }

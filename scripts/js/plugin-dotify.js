@@ -17,6 +17,7 @@
 
 export function dotify($args) {
   const { $targetItems, $options, $modules } = $args;
+  // Plugin Start
   const ignoredUncapitalizedWordSet = new Set([
     "a",
     "about",
@@ -119,4 +120,5 @@ export function dotify($args) {
       );
     }
   }
+  // Plugin End
 }
