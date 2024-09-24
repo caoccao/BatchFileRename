@@ -654,28 +654,28 @@ function Settings(args: Args) {
                   variant="outlined"
                   sx={{ textTransform: "none" }}
                   onClick={() => {
-                    onClickButtonInsertArgument("sourceItems");
+                    onClickButtonInsertArgument("$sourceItems");
                   }}
                 >
-                  Insert Source Items
+                  Insert $sourceItems
                 </Button>
                 <Button
                   variant="outlined"
                   sx={{ textTransform: "none" }}
                   onClick={() => {
-                    onClickButtonInsertArgument("targetItems");
+                    onClickButtonInsertArgument("$targetItems");
                   }}
                 >
-                  Insert Target Items
+                  Insert $targetItems
                 </Button>
                 <Button
                   variant="outlined"
                   sx={{ textTransform: "none" }}
                   onClick={() => {
-                    onClickButtonInsertArgument("options");
+                    onClickButtonInsertArgument("$options");
                   }}
                 >
-                  Insert Options
+                  Insert $options
                 </Button>
                 <Button
                   variant="outlined"
