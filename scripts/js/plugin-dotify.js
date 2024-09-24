@@ -16,7 +16,7 @@
  */
 
 export function dotify($args) {
-  const { $targetItems, $options, $utils } = $args;
+  const { $targetItems, $options, $modules } = $args;
   const ignoredUncapitalizedWordSet = new Set([
     "a",
     "about",
@@ -67,10 +67,10 @@ export function dotify($args) {
   const length = $targetItems.length;
   for (let i = 0; i < length; ++i) {
     const targetPath = $targetItems[i].targetPath;
-    const baseName = $utils.path.basename(targetPath);
+    const baseName = $modules.path.basename(targetPath);
     if (baseName && baseName.length >= 0) {
-      const parentPath = $utils.path.dirname(targetPath);
-      const extName = $utils.path.extname(targetPath);
+      const parentPath = $modules.path.dirname(targetPath);
+      const extName = $modules.path.extname(targetPath);
       const name = baseName.substring(0, baseName.length - extName.length);
       const words = [];
       let position = 0;
@@ -113,7 +113,7 @@ export function dotify($args) {
           return word;
         })
         .join($options.separator);
-      $targetItems[i].targetPath = $utils.path.join(
+      $targetItems[i].targetPath = $modules.path.join(
         parentPath,
         `${newName}${extName}`
       );

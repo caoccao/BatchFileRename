@@ -30,7 +30,7 @@ export function assertPlugin(plugin, originalPath, expectedPath, options) {
     $sourceItems: [],
     $targetItems: originalPath ? [{ targetPath: originalPath }] : [],
     $options: options,
-    $utils: {
+    $modules: {
       path,
     },
   };
