@@ -19,7 +19,7 @@ import { assertPlugin } from "./utils.js";
 import { dotify } from "./plugin-dotify.js";
 
 const options = {
-  $pathSeparator: "/",
+  separator: ".",
 };
 
 assertPlugin(dotify, null, null, options);

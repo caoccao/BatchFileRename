@@ -15,6 +15,8 @@
  *   limitations under the License.
  */
 
+import path from "node:path";
+
 export function assert(condition, message) {
   if (condition) {
     console.info(`✅ ${message} passed.`);
@@ -23,17 +25,20 @@ export function assert(condition, message) {
   }
 }
 
-export function assertPlugin(plugin, path, expectedPath, options) {
-  const targetItems = path ? [{ targetPath: path }] : [];
+export function assertPlugin(plugin, originalPath, expectedPath, options) {
   const args = {
     $sourceItems: [],
-    $targetItems: path ? [{ targetPath: path }] : [],
+    $targetItems: originalPath ? [{ targetPath: originalPath }] : [],
     $options: options,
+    $utils: {
+      path,
+    },
   };
   const message = JSON.stringify(args.$targetItems);
   plugin(args);
   if (expectedPath) {
-    assert(args.$targetItems[0].targetPath === expectedPath, message);
+    const newPath = args.$targetItems[0].targetPath.replaceAll("\\", "/");
+    assert(newPath === expectedPath, message);
   } else {
     assert(args.$targetItems.length == 0, message);
   }
