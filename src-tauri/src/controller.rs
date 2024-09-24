@@ -24,7 +24,7 @@ use crate::config;
 use crate::plugins;
 use crate::protocol;
 
-const is_windows: bool = cfg!(target_os = "windows");
+const IS_WINDOWS: bool = cfg!(target_os = "windows");
 
 pub async fn get_config() -> Result<config::Config> {
   let mut config = config::get_config();
@@ -135,8 +135,8 @@ pub async fn rename_items(items: Vec<protocol::Item>) -> Result<usize> {
       let target_path = Path::new(item.target_path.as_str());
       if target_path.exists()
         && !source_path_set.contains(item.target_path.as_str())
-        && (!is_windows
-          || (is_windows
+        && (!IS_WINDOWS
+          || (IS_WINDOWS
             && source_path.to_str().unwrap().to_lowercase() != target_path.to_str().unwrap().to_lowercase()))
       {
         return Err(anyhow::anyhow!("Target path {} exists.", target_path.display()));
