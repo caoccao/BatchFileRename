@@ -296,6 +296,7 @@ function App() {
         hidden={tabIndex !== 2}
       >
         <TargetEditor
+          config={config}
           items={items}
           setItems={setItems}
           setNotification={setNotification}
