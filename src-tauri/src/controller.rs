@@ -21,11 +21,25 @@ use std::fs;
 use std::path::Path;
 
 use crate::config;
+use crate::plugins;
 use crate::protocol;
 
 pub async fn get_config() -> Result<config::Config> {
-  let config = config::get_config();
-  // TODO
+  let mut config = config::get_config();
+  let mut built_in_plugin_name_set = plugins::get_built_in_plugin_name_set();
+  config.plugins.iter().for_each(|plugin| {
+    if built_in_plugin_name_set.contains(&plugin.name) {
+      built_in_plugin_name_set.remove(&plugin.name);
+    }
+  });
+  if !built_in_plugin_name_set.is_empty() {
+    built_in_plugin_name_set.iter().for_each(|name| {
+      config
+        .plugins
+        .push(plugins::BUILT_IN_PLUGIN_MAP.get(name).unwrap().clone());
+    });
+    config::set_config(config.clone())?;
+  }
   Ok(config)
 }
 
