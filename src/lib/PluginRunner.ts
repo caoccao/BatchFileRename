@@ -38,11 +38,12 @@ const path = Object.freeze({
     return p.substring(0, index);
   },
   extname: (p: string): string => {
-    const index = p.lastIndexOf(".");
+    const basename = path.basename(p);
+    const index = basename.lastIndexOf(".");
     if (index < 0) {
       return "";
     }
-    return p.substring(index);
+    return basename.substring(index);
   },
   join: (...paths: string[]): string => {
     paths.forEach((p) => {
