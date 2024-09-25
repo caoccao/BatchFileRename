@@ -653,113 +653,120 @@ function Settings(args: Args) {
               >
                 Arguments
               </legend>
-              <Stack direction="row" spacing={2}>
-                <Tooltip arrow title="Insert $sourceItems">
+              <Stack spacing={2}>
+                <Stack direction="row" spacing={2}>
+                  <Tooltip arrow title="Insert $sourceItems">
+                    <Button
+                      variant="outlined"
+                      sx={{ textTransform: "none" }}
+                      onClick={() => {
+                        onClickButtonInsertArgument("$sourceItems");
+                      }}
+                    >
+                      $sourceItems
+                    </Button>
+                  </Tooltip>
+                  <Tooltip arrow title="Insert $targetItems">
+                    <Button
+                      variant="outlined"
+                      sx={{ textTransform: "none" }}
+                      onClick={() => {
+                        onClickButtonInsertArgument("$targetItems");
+                      }}
+                    >
+                      $targetItems
+                    </Button>
+                  </Tooltip>
+                  <Tooltip arrow title="Insert $options">
+                    <Button
+                      variant="outlined"
+                      sx={{ textTransform: "none" }}
+                      onClick={() => {
+                        onClickButtonInsertArgument("$options");
+                      }}
+                    >
+                      $options
+                    </Button>
+                  </Tooltip>
+                  <Tooltip arrow title="Insert $modules">
+                    <Button
+                      variant="outlined"
+                      sx={{ textTransform: "none" }}
+                      onClick={() => {
+                        onClickButtonInsertArgument("$modules");
+                      }}
+                    >
+                      $modules
+                    </Button>
+                  </Tooltip>
                   <Button
                     variant="outlined"
+                    startIcon={<AddBoxOutlinedIcon />}
                     sx={{ textTransform: "none" }}
-                    onClick={() => {
-                      onClickButtonInsertArgument("$sourceItems");
-                    }}
+                    onClick={onClickButtonAddPluginOption}
                   >
-                    $sourceItems
+                    Add an Option
                   </Button>
-                </Tooltip>
-                <Tooltip arrow title="Insert $targetItems">
-                  <Button
-                    variant="outlined"
-                    sx={{ textTransform: "none" }}
-                    onClick={() => {
-                      onClickButtonInsertArgument("$targetItems");
-                    }}
-                  >
-                    $targetItems
-                  </Button>
-                </Tooltip>
-                <Tooltip arrow title="Insert $options">
-                  <Button
-                    variant="outlined"
-                    sx={{ textTransform: "none" }}
-                    onClick={() => {
-                      onClickButtonInsertArgument("$options");
-                    }}
-                  >
-                    $options
-                  </Button>
-                </Tooltip>
-                <Tooltip arrow title="Insert $modules">
-                  <Button
-                    variant="outlined"
-                    sx={{ textTransform: "none" }}
-                    onClick={() => {
-                      onClickButtonInsertArgument("$modules");
-                    }}
-                  >
-                    $modules
-                  </Button>
-                </Tooltip>
-                <Button
-                  variant="outlined"
-                  startIcon={<AddBoxOutlinedIcon />}
-                  sx={{ textTransform: "none" }}
-                  onClick={onClickButtonAddPluginOption}
-                >
-                  Add an Option
-                </Button>
+                </Stack>
+                {(() =>
+                  pluginOptions.length > 0 ? (
+                    <TableContainer component={Paper}>
+                      <Table size="small">
+                        <TableHead>
+                          <TableRow>
+                            <TableCell>Name</TableCell>
+                            <TableCell>Default Value</TableCell>
+                            <TableCell align="center">Action</TableCell>
+                          </TableRow>
+                        </TableHead>
+                        <TableBody>
+                          {pluginOptions.map((option, index) => (
+                            <TableRow key={index}>
+                              <TableCell>
+                                <TextField
+                                  fullWidth
+                                  size="small"
+                                  value={option.name}
+                                  onChange={(event) => {
+                                    onChangePluginOptionName(event, index);
+                                  }}
+                                  placeholder="Name"
+                                />
+                              </TableCell>
+                              <TableCell>
+                                <TextField
+                                  fullWidth
+                                  size="small"
+                                  value={option.defaultValue}
+                                  onChange={(event) => {
+                                    onChangePluginOptionDefaultValue(
+                                      event,
+                                      index
+                                    );
+                                  }}
+                                  placeholder="Default Value"
+                                />
+                              </TableCell>
+                              <TableCell align="center">
+                                <IconButton
+                                  aria-label="Delete"
+                                  color="primary"
+                                  onClick={() => {
+                                    onClickButtonDeletePluginOption(index);
+                                  }}
+                                >
+                                  <HighlightOffOutlinedIcon fontSize="small" />
+                                </IconButton>
+                              </TableCell>
+                            </TableRow>
+                          ))}
+                        </TableBody>
+                      </Table>
+                    </TableContainer>
+                  ) : (
+                    <></>
+                  ))()}
               </Stack>
-              {(() =>
-                pluginOptions.length > 0 ? (
-                  <Table size="small">
-                    <TableHead>
-                      <TableRow>
-                        <TableCell>Name</TableCell>
-                        <TableCell>Default Value</TableCell>
-                        <TableCell align="center">Action</TableCell>
-                      </TableRow>
-                    </TableHead>
-                    <TableBody>
-                      {pluginOptions.map((option, index) => (
-                        <TableRow key={index}>
-                          <TableCell>
-                            <TextField
-                              fullWidth
-                              size="small"
-                              value={option.name}
-                              onChange={(event) => {
-                                onChangePluginOptionName(event, index);
-                              }}
-                              placeholder="Name"
-                            />
-                          </TableCell>
-                          <TableCell>
-                            <TextField
-                              fullWidth
-                              size="small"
-                              value={option.defaultValue}
-                              onChange={(event) => {
-                                onChangePluginOptionDefaultValue(event, index);
-                              }}
-                              placeholder="Default Value"
-                            />
-                          </TableCell>
-                          <TableCell align="center">
-                            <IconButton
-                              aria-label="Delete"
-                              color="primary"
-                              onClick={() => {
-                                onClickButtonDeletePluginOption(index);
-                              }}
-                            >
-                              <HighlightOffOutlinedIcon fontSize="small" />
-                            </IconButton>
-                          </TableCell>
-                        </TableRow>
-                      ))}
-                    </TableBody>
-                  </Table>
-                ) : (
-                  <></>
-                ))()}
             </fieldset>
             <fieldset
               style={{ borderRadius: "5px", border: "1px solid lightgray" }}

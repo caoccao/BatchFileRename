@@ -121,15 +121,17 @@ function Dashboard(args: Args) {
     return (
       <React.Fragment>
         <Stack direction="row" spacing={2} sx={{ mt: "10px", mb: "5px" }}>
-          <Button
-            variant="outlined"
-            startIcon={<DocumentScannerOutlinedIcon />}
-            size="small"
-            onClick={onClickScan}
-            sx={{ textTransform: "none" }}
-          >
-            Scan
-          </Button>
+          <Tooltip arrow title="Scan the directories.">
+            <Button
+              variant="outlined"
+              startIcon={<DocumentScannerOutlinedIcon />}
+              size="small"
+              onClick={onClickScan}
+              sx={{ textTransform: "none" }}
+            >
+              Scan
+            </Button>
+          </Tooltip>
           <Tooltip arrow title="Include the directories in the source items.">
             <FormControlLabel
               control={

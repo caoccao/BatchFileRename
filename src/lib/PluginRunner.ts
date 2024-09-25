@@ -58,6 +58,7 @@ const path = Object.freeze({
 
 export function runPlugin(
   plugin: ConfigPlugin,
+  options: Record<string, string>,
   items: Item[],
   targetPathsString: string
 ): string {
@@ -78,10 +79,6 @@ export function runPlugin(
       return { targetPath: item.targetPath };
     })
   );
-  const options: Record<string, string> = {};
-  plugin.options.forEach((option) => {
-    options[option.name] = option.defaultValue;
-  });
   const $options = Object.freeze(options);
   const $modules = Object.freeze({
     path,
