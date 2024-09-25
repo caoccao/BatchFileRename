@@ -71,8 +71,8 @@ export function dotCase($args) {
     const baseName = $modules.path.basename(targetPath);
     if (baseName && baseName.length >= 0) {
       const parentPath = $modules.path.dirname(targetPath);
-      const extName = $modules.path.extname(targetPath);
-      const name = baseName.substring(0, baseName.length - extName.length);
+      const ext = $modules.path.extname(targetPath);
+      const name = baseName.substring(0, baseName.length - ext.length);
       const words = [];
       let position = 0;
       for (const match of [
@@ -116,7 +116,7 @@ export function dotCase($args) {
         .join($options.separator);
       $targetItems[i].targetPath = $modules.path.join(
         parentPath,
-        `${newName}${extName}`
+        `${newName}${ext}`
       );
     }
   }

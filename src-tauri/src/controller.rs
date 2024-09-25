@@ -35,11 +35,12 @@ pub async fn get_config() -> Result<config::Config> {
     }
   });
   if !built_in_plugin_name_set.is_empty() {
-    built_in_plugin_name_set.iter().for_each(|name| {
-      config
-        .plugins
-        .push(plugins::BUILT_IN_PLUGIN_MAP.get(name).unwrap().clone());
-    });
+    plugins::BUILT_IN_PLUGINS
+      .iter()
+      .filter(|plugin| built_in_plugin_name_set.contains(&plugin.name))
+      .for_each(|plugin| {
+        config.plugins.push(plugin.clone());
+      });
     config::set_config(config.clone())?;
   }
   Ok(config)

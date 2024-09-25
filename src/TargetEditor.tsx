@@ -43,7 +43,13 @@ import { editor } from "monaco-editor";
 // @ts-ignore
 import { initVimMode } from "monaco-vim";
 
-import { Config, Item, Notification, NotificationType } from "./lib/Protocol";
+import {
+  Config,
+  ConfigPlugin,
+  Item,
+  Notification,
+  NotificationType,
+} from "./lib/Protocol";
 import { runPlugin } from "./lib/PluginRunner";
 
 export interface Args {
@@ -60,6 +66,25 @@ function TargetEditor(args: Args) {
   const [pluginIndex, setPluginIndex] = React.useState(0);
   const [pluginMenuOpen, setPluginMenuOpen] = React.useState(false);
   const [vim, setVim] = React.useState<any>(null);
+
+  const internalRunPlugin = React.useCallback(
+    (plugin: ConfigPlugin | undefined) => {
+      if (plugin && monacoEditor) {
+        try {
+          monacoEditor.setValue(
+            runPlugin(plugin, args.items, monacoEditor.getValue())
+          );
+          onClickSave();
+        } catch (error) {
+          args.setNotification({
+            message: `${error}`,
+            type: NotificationType.Error,
+          });
+        }
+      }
+    },
+    [args.items, monacoEditor]
+  );
 
   function onClickAwayPluginMenu(event: MouseEvent | TouchEvent) {
     if (
@@ -83,30 +108,18 @@ function TargetEditor(args: Args) {
     setPluginMenuOpen(!pluginMenuOpen);
   }
 
-  function onClickPluginMenuDropdown(
-    _event: React.MouseEvent<HTMLLIElement, MouseEvent>,
-    index: number
-  ): void {
-    setPluginIndex(index);
-    setPluginMenuOpen(false);
-  }
+  const onClickPluginMenuDropdown = React.useCallback(
+    (_event: React.MouseEvent<HTMLLIElement, MouseEvent>, index: number) => {
+      setPluginIndex(index);
+      setPluginMenuOpen(false);
+      internalRunPlugin(args.config?.plugins[index]);
+    },
+    [args.config, args.items, monacoEditor, pluginIndex]
+  );
 
-  function onClickRunPlugin() {
-    const plugin = args.config?.plugins[pluginIndex];
-    if (plugin && monacoEditor) {
-      try {
-        monacoEditor.setValue(
-          runPlugin(plugin, args.items, monacoEditor.getValue())
-        );
-        onClickSave();
-      } catch (error) {
-        args.setNotification({
-          message: `${error}`,
-          type: NotificationType.Error,
-        });
-      }
-    }
-  }
+  const onClickRunPlugin = React.useCallback(() => {
+    internalRunPlugin(args.config?.plugins[pluginIndex]);
+  }, [args.config, args.items, monacoEditor, pluginIndex]);
 
   const onClickSave = React.useCallback(() => {
     if (monacoEditor) {
