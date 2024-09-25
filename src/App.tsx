@@ -26,7 +26,7 @@ import type { Event, UnlistenFn } from "@tauri-apps/api/event";
 import type { FileDropEvent } from "@tauri-apps/api/window";
 
 import React from "react";
-import { Alert, Box, Snackbar, Tab, Tabs } from "@mui/material";
+import { Box, Tab, Tabs } from "@mui/material";
 
 import {
   Config,
@@ -38,8 +38,9 @@ import {
 
 import Dashboard from "./Dashboard";
 import Footer from "./Footer";
-import SourceEditor from "./SourceEditor";
+import NotificationBar from "./NotificationBar";
 import Settings from "./Settings";
+import SourceEditor from "./SourceEditor";
 import TargetEditor from "./TargetEditor";
 import Tools from "./Tools";
 
@@ -156,10 +157,6 @@ function App() {
         });
       });
   }, [items, notification]);
-
-  function onCloseSnackbar() {
-    setNotification(null);
-  }
 
   const onChangeTabIndex = (
     _event: React.SyntheticEvent,
@@ -307,30 +304,10 @@ function App() {
         />
       </div>
       <Footer />
-      <Snackbar
-        anchorOrigin={{ vertical: "top", horizontal: "center" }}
-        open={notification !== null}
-        onClose={onCloseSnackbar}
-        autoHideDuration={5000}
-      >
-        <Alert
-          onClose={onCloseSnackbar}
-          severity={(() => {
-            switch (notification?.type) {
-              case NotificationType.Error:
-                return "error";
-              case NotificationType.Success:
-                return "success";
-              default:
-                return "info";
-            }
-          })()}
-          variant="filled"
-          sx={{ width: "100%" }}
-        >
-          {notification?.message}
-        </Alert>
-      </Snackbar>
+      <NotificationBar
+        notification={notification}
+        setNotification={setNotification}
+      />
     </Box>
   );
 }
