@@ -15,16 +15,14 @@
  *   limitations under the License.
  */
 
-import { assertPlugin } from "./utils.js";
-import { dotify } from "./plugin-dotify.js";
+import { testPlugin } from "./test-utils.js";
+import { dotCase } from "./plugin-dot-case.js";
 
-const options = {
-  separator: ".",
-};
+const options = { separator: "." };
 
-assertPlugin(dotify, null, null, options);
-assertPlugin(dotify, "/test/a b c.x", "/test/A.B.C.x", options);
-assertPlugin(dotify, "/test/a &b&c.x", "/test/A.and.B.and.C.x", options);
-assertPlugin(dotify, "/test/a &,& b(&&)c.x", "/test/A.and.B.and.C.x", options);
-assertPlugin(dotify, "/test/abc,=,def.x", "/test/Abc.Def.x", options);
-assertPlugin(dotify, "/test/aBC,OF,dEF.x", "/test/ABC.of.DEF.x", options);
+testPlugin(dotCase, null, null, options);
+testPlugin(dotCase, "/test/a b c.x", "/test/A.B.C.x", options);
+testPlugin(dotCase, "/test/a &b&c.x", "/test/A.and.B.and.C.x", options);
+testPlugin(dotCase, "/test/a &,& b(&&)c.x", "/test/A.and.B.and.C.x", options);
+testPlugin(dotCase, "/test/abc,=,def.x", "/test/Abc.Def.x", options);
+testPlugin(dotCase, "/test/aBC,OF,dEF.x", "/test/ABC.of.DEF.x", options);

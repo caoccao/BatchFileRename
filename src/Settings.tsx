@@ -250,16 +250,24 @@ function Settings(args: Args) {
   const onClickButtonDeletePlugin = React.useCallback(
     (index: number) => {
       if (index >= 0 && index < plugins.length) {
-        setPlugins(plugins.filter((_, i) => i !== index));
+        const newPlugins = plugins.filter((_, i) => i !== index);
+        setPlugins(newPlugins);
+        setConfig(
+          depth,
+          extensionText,
+          filterByExtensions,
+          includeDirectories,
+          newPlugins
+        );
       }
     },
-    [plugins]
+    [depth, extensionText, filterByExtensions, includeDirectories, plugins]
   );
 
   const onClickButtonDeletePluginOption = React.useCallback(
     (index: number) => {
       if (index >= 0 && index < pluginOptions.length) {
-        setDirty(true);
+        setPluginDirty(true);
         setPluginOptions(pluginOptions.filter((_, i) => i !== index));
       }
     },

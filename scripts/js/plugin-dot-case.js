@@ -15,7 +15,7 @@
  *   limitations under the License.
  */
 
-export function dotify($args) {
+export function dotCase($args) {
   const { $targetItems, $options, $modules } = $args;
   // Plugin Start
   const ignoredUncapitalizedWordSet = new Set([

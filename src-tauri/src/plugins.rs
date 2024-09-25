@@ -34,9 +34,11 @@ pub static BUILT_IN_PLUGIN_MAP: Lazy<HashMap<String, ConfigPlugin>> = Lazy::new(
 
 fn get_built_in_plugins() -> Vec<ConfigPlugin> {
   vec![ConfigPlugin {
-    code: normalize_code(include_str!("../../scripts/js/plugin-dotify.js")),
-    description: "Replace special characters with a given separator. The default separator is '.'.".to_string(),
-    name: "Dotify".to_string(),
+    code: normalize_code(include_str!("../../scripts/js/plugin-dot-case.js")),
+    description:
+      "Capitalize every word and replace special characters with a given separator. The default separator is dot."
+        .to_string(),
+    name: "Dot Case".to_string(),
     options: vec![ConfigPluginOption {
       default_value: ".".to_string(),
       name: "separator".to_string(),

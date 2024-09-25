@@ -16,16 +16,9 @@
  */
 
 import path from "node:path";
+import { expect, test } from "vitest";
 
-export function assert(condition, message) {
-  if (condition) {
-    console.info(`✅ ${message} passed.`);
-  } else {
-    console.error(`❌ ${message} failed.`);
-  }
-}
-
-export function assertPlugin(plugin, originalPath, expectedPath, options) {
+export function testPlugin(plugin, originalPath, expectedPath, options) {
   const args = {
     $sourceItems: [],
     $targetItems: originalPath ? [{ targetPath: originalPath }] : [],
@@ -34,12 +27,16 @@ export function assertPlugin(plugin, originalPath, expectedPath, options) {
       path,
     },
   };
-  const message = JSON.stringify(args.$targetItems);
+  const message = "Test: " + JSON.stringify(args.$targetItems);
   plugin(args);
   if (expectedPath) {
-    const newPath = args.$targetItems[0].targetPath.replaceAll("\\", "/");
-    assert(newPath === expectedPath, message);
+    test(message, () => {
+      const newPath = args.$targetItems[0].targetPath.replaceAll("\\", "/");
+      expect(newPath).toBe(expectedPath);
+    });
   } else {
-    assert(args.$targetItems.length == 0, message);
+    test(message, () => {
+      expect(args.$targetItems.length).toBe(0);
+    });
   }
 }
