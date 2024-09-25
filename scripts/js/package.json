@@ -4,7 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "vitest"
+    "test": "vitest run --dir ./",
+    "watch": "vitest watch --dir ./"
   },
   "keywords": [],
   "author": "",
