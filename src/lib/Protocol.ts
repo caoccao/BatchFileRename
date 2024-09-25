@@ -16,7 +16,7 @@
  */
 
 export interface Config {
-  depth: number,
+  depth: number;
   extensions: string[];
   filterByExtensions: boolean;
   includeDirectories: boolean;
@@ -54,6 +54,5 @@ export interface Notification {
 
 export enum NotificationType {
   Error = "Error",
-  Info = "Info",
-  None = "None",
+  Success = "Success",
 }

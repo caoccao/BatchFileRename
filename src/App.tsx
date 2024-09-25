@@ -26,7 +26,7 @@ import type { Event, UnlistenFn } from "@tauri-apps/api/event";
 import type { FileDropEvent } from "@tauri-apps/api/window";
 
 import React from "react";
-import { Box, Tab, Tabs } from "@mui/material";
+import { Alert, Box, Snackbar, Tab, Tabs } from "@mui/material";
 
 import {
   Config,
@@ -36,12 +36,12 @@ import {
   NotificationType,
 } from "./lib/Protocol";
 
+import Dashboard from "./Dashboard";
 import Footer from "./Footer";
 import SourceEditor from "./SourceEditor";
 import Settings from "./Settings";
 import TargetEditor from "./TargetEditor";
 import Tools from "./Tools";
-import Dashboard from "./Dashboard";
 
 const TAB_SIZE = 4;
 
@@ -50,16 +50,19 @@ function App() {
   const [items, setItems] = React.useState<Item[]>([]);
   const [globalKeyboardShortcutsEnabled, setGlobalKeyboardShortcutsEnabled] =
     React.useState(true);
-  const [notification, setNotification] = React.useState<Notification>({
-    message: "",
-    type: NotificationType.None,
-  });
-
+  const [notification, setNotification] = React.useState<Notification | null>(
+    null
+  );
   const [tabIndex, setTabIndex] = React.useState(0);
+
+  function clear() {
+    setItems([]);
+    setTabIndex(0);
+  }
 
   const handleClear = React.useCallback(() => {
     clear();
-  }, [items, notification]);
+  }, [items, tabIndex]);
 
   const handleGlobalKeyboardShortcuts = React.useCallback(
     (event: KeyboardEvent) => {
@@ -135,7 +138,7 @@ function App() {
         }
       }
     },
-    [items, globalKeyboardShortcutsEnabled, notification, tabIndex]
+    [items, globalKeyboardShortcutsEnabled, tabIndex]
   );
 
   const handleRename = React.useCallback(() => {
@@ -143,7 +146,7 @@ function App() {
       .then((value) => {
         setNotification({
           message: `Renamed ${value} item(s) successfully`,
-          type: NotificationType.Info,
+          type: NotificationType.Success,
         });
       })
       .catch((error) => {
@@ -153,6 +156,10 @@ function App() {
         });
       });
   }, [items, notification]);
+
+  function onCloseSnackbar() {
+    setNotification(null);
+  }
 
   const onChangeTabIndex = (
     _event: React.SyntheticEvent,
@@ -172,7 +179,6 @@ function App() {
             targetPath: path,
             type: ItemType.Unknown,
           }));
-          clearNotification();
           setItems(newItems);
           invoke<Item[]>("scan_items", {
             items: newItems,
@@ -215,25 +221,11 @@ function App() {
     };
   }, [items, config, globalKeyboardShortcutsEnabled, notification, tabIndex]);
 
-  function clear() {
-    clearNotification();
-    setItems([]);
-    setTabIndex(0);
-  }
-
-  function clearNotification() {
-    setNotification({
-      message: "",
-      type: NotificationType.None,
-    });
-  }
-
   return (
     <Box sx={{ width: "100%" }}>
       <Tools
         clear={clear}
         items={items}
-        notification={notification}
         setItems={setItems}
         setNotification={setNotification}
       />
@@ -315,6 +307,30 @@ function App() {
         />
       </div>
       <Footer />
+      <Snackbar
+        anchorOrigin={{ vertical: "top", horizontal: "center" }}
+        open={notification !== null}
+        onClose={onCloseSnackbar}
+        autoHideDuration={5000}
+      >
+        <Alert
+          onClose={onCloseSnackbar}
+          severity={(() => {
+            switch (notification?.type) {
+              case NotificationType.Error:
+                return "error";
+              case NotificationType.Success:
+                return "success";
+              default:
+                return "info";
+            }
+          })()}
+          variant="filled"
+          sx={{ width: "100%" }}
+        >
+          {notification?.message}
+        </Alert>
+      </Snackbar>
     </Box>
   );
 }

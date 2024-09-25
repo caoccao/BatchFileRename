@@ -52,7 +52,7 @@ export interface Args {
   config: Config | null;
   items: Item[];
   setItems: React.Dispatch<React.SetStateAction<Item[]>>;
-  setNotification: React.Dispatch<React.SetStateAction<Notification>>;
+  setNotification: React.Dispatch<React.SetStateAction<Notification | null>>;
 }
 
 function Dashboard(args: Args) {
@@ -81,10 +81,6 @@ function Dashboard(args: Args) {
         filterByExtensions && args.config ? args.config.extensions : [],
     })
       .then((value) => {
-        args.setNotification({
-          message: "",
-          type: NotificationType.None,
-        });
         args.setItems(value);
       })
       .catch((error) => {

@@ -50,7 +50,7 @@ export interface Args {
   config: Config | null;
   items: Item[];
   setItems: React.Dispatch<React.SetStateAction<Item[]>>;
-  setNotification: React.Dispatch<React.SetStateAction<Notification>>;
+  setNotification: React.Dispatch<React.SetStateAction<Notification | null>>;
 }
 
 function TargetEditor(args: Args) {
@@ -95,10 +95,6 @@ function TargetEditor(args: Args) {
     const plugin = args.config?.plugins[pluginIndex];
     if (plugin && monacoEditor) {
       try {
-        args.setNotification({
-          message: "",
-          type: NotificationType.None,
-        });
         monacoEditor.setValue(
           runPlugin(plugin, args.items, monacoEditor.getValue())
         );
@@ -125,10 +121,6 @@ function TargetEditor(args: Args) {
           type: NotificationType.Error,
         });
       } else {
-        args.setNotification({
-          message: "",
-          type: NotificationType.None,
-        });
         args.setItems(
           args.items.map((item, i) => {
             return {

@@ -23,41 +23,21 @@ import {
   Publish as PublishIcon,
   Recycling as RecyclingIcon,
 } from "@mui/icons-material";
-import { Box, Button, Stack, Tooltip, Typography } from "@mui/material";
+import { Box, Button, Stack, Tooltip } from "@mui/material";
 
 import { Item, Notification, NotificationType } from "./lib/Protocol";
 
 export interface Args {
   clear: () => void;
   items: Item[];
-  notification: Notification;
   setItems: React.Dispatch<React.SetStateAction<Item[]>>;
-  setNotification: React.Dispatch<React.SetStateAction<Notification>>;
-}
-
-function NotificationBox(args: { notification: Notification }) {
-  switch (args.notification.type) {
-    case NotificationType.Error:
-      return (
-        <Typography variant="body1" color="error">
-          {args.notification.message}
-        </Typography>
-      );
-    case NotificationType.Info:
-      return (
-        <Typography variant="body1" color="info">
-          {args.notification.message}
-        </Typography>
-      );
-    default:
-      return <></>;
-  }
+  setNotification: React.Dispatch<React.SetStateAction<Notification | null>>;
 }
 
 function Tools(args: Args) {
   const onClickClear = React.useCallback(() => {
     args.clear();
-  }, [args.items, args.notification]);
+  }, [args.items]);
 
   const onClickRename = React.useCallback(() => {
     invoke<number>("rename_items", {
@@ -66,7 +46,7 @@ function Tools(args: Args) {
       .then((value) => {
         args.setNotification({
           message: `Renamed ${value} item(s) successfully`,
-          type: NotificationType.Info,
+          type: NotificationType.Success,
         });
       })
       .catch((error) => {
@@ -75,7 +55,7 @@ function Tools(args: Args) {
           type: NotificationType.Error,
         });
       });
-  }, [args.items, args.notification]);
+  }, [args.items]);
 
   return (
     <Box>
@@ -104,7 +84,6 @@ function Tools(args: Args) {
             Clear
           </Button>
         </Tooltip>
-        <NotificationBox notification={args.notification} />
       </Stack>
     </Box>
   );

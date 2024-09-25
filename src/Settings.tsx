@@ -74,7 +74,7 @@ interface Args {
   setGlobalKeyboardShortcutsEnabled: React.Dispatch<
     React.SetStateAction<boolean>
   >;
-  setNotification: React.Dispatch<React.SetStateAction<Notification>>;
+  setNotification: React.Dispatch<React.SetStateAction<Notification | null>>;
 }
 
 function Settings(args: Args) {
@@ -293,10 +293,6 @@ function Settings(args: Args) {
       config: args.config,
     })
       .then((value) => {
-        args.setNotification({
-          message: "",
-          type: NotificationType.None,
-        });
         args.setConfig(value);
         setDirty(false);
       })
