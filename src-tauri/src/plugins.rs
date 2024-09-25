@@ -58,6 +58,19 @@ fn get_built_in_plugins() -> Vec<ConfigPlugin> {
         name: "includeExtension".to_string(),
       }],
     },
+    ConfigPlugin {
+      code: normalize_code(include_str!("../../scripts/js/plugin-to-upper-case.js")),
+      description: "Convert all characters of the file name to lowercase.".to_string(),
+      name: "To UPPER CASE".to_string(),
+      options: vec![ConfigPluginOption {
+        default_value: "true".to_string(),
+        name: "includeName".to_string(),
+      },
+      ConfigPluginOption {
+        default_value: "false".to_string(),
+        name: "includeExtension".to_string(),
+      }],
+    },
   ]
 }
 
