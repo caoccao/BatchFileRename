@@ -11,6 +11,12 @@ fn convert_error(error: anyhow::Error) -> String {
 }
 
 #[tauri::command]
+async fn get_built_in_plugins() -> Result<Vec<config::ConfigPlugin>, String> {
+  log::debug!("get_built_in_plugins");
+  controller::get_built_in_plugins().await.map_err(convert_error)
+}
+
+#[tauri::command]
 async fn get_config() -> Result<config::Config, String> {
   log::debug!("get_config");
   controller::get_config().await.map_err(convert_error)
@@ -51,6 +57,7 @@ fn main() {
   env_logger::init();
   tauri::Builder::default()
     .invoke_handler(tauri::generate_handler![
+      get_built_in_plugins,
       get_config,
       rename_items,
       scan_items,

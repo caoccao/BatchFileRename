@@ -24,23 +24,19 @@ use crate::config;
 use crate::plugins;
 use crate::protocol;
 
-const IS_WINDOWS: bool = cfg!(target_os = "windows");
+const CASE_INSENSITIVE: bool = cfg!(target_os = "windows") || cfg!(target_os = "macos");
+
+pub async fn get_built_in_plugins() -> Result<Vec<config::ConfigPlugin>> {
+  Ok(plugins::BUILT_IN_PLUGINS.clone())
+}
 
 pub async fn get_config() -> Result<config::Config> {
   let mut config = config::get_config();
-  let mut built_in_plugin_name_set = plugins::get_built_in_plugin_name_set();
-  config.plugins.iter().for_each(|plugin| {
-    if built_in_plugin_name_set.contains(&plugin.name) {
-      built_in_plugin_name_set.remove(&plugin.name);
-    }
-  });
-  if !built_in_plugin_name_set.is_empty() {
-    plugins::BUILT_IN_PLUGINS
-      .iter()
-      .filter(|plugin| built_in_plugin_name_set.contains(&plugin.name))
-      .for_each(|plugin| {
-        config.plugins.push(plugin.clone());
-      });
+  // Only load built-in plugins if the config doesn't have any plugins.
+  if config.plugins.is_empty() {
+    plugins::BUILT_IN_PLUGINS.iter().for_each(|plugin| {
+      config.plugins.push(plugin.clone());
+    });
     config::set_config(config.clone())?;
   }
   Ok(config)
@@ -136,8 +132,8 @@ pub async fn rename_items(items: Vec<protocol::Item>) -> Result<usize> {
       let target_path = Path::new(item.target_path.as_str());
       if target_path.exists()
         && !source_path_set.contains(item.target_path.as_str())
-        && (!IS_WINDOWS
-          || (IS_WINDOWS
+        && (!CASE_INSENSITIVE
+          || (CASE_INSENSITIVE
             && source_path.to_str().unwrap().to_lowercase() != target_path.to_str().unwrap().to_lowercase()))
       {
         return Err(anyhow::anyhow!("Target path {} exists.", target_path.display()));

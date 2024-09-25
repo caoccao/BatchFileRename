@@ -16,7 +16,6 @@
 */
 
 use once_cell::sync::Lazy;
-use std::collections::{HashMap, HashSet};
 use std::include_str;
 
 use crate::config::{ConfigPlugin, ConfigPluginOption};
@@ -25,12 +24,6 @@ const PLUGIN_START: &str = "\n  // Plugin Start\n";
 const PLUGIN_END: &str = "\n  // Plugin End\n";
 
 pub static BUILT_IN_PLUGINS: Lazy<Vec<ConfigPlugin>> = Lazy::new(|| get_built_in_plugins());
-pub static BUILT_IN_PLUGIN_MAP: Lazy<HashMap<String, ConfigPlugin>> = Lazy::new(|| {
-  BUILT_IN_PLUGINS
-    .iter()
-    .map(|plugin| (plugin.name.clone(), plugin.clone()))
-    .collect()
-});
 
 fn get_built_in_plugins() -> Vec<ConfigPlugin> {
   vec![
@@ -72,10 +65,6 @@ fn get_built_in_plugins() -> Vec<ConfigPlugin> {
       }],
     },
   ]
-}
-
-pub fn get_built_in_plugin_name_set() -> HashSet<String> {
-  BUILT_IN_PLUGIN_MAP.keys().cloned().collect()
 }
 
 fn normalize_code(code: &str) -> String {
