@@ -4,13 +4,14 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "vitest run --dir ./",
-    "watch": "vitest watch --dir ./"
+    "test": "vitest run",
+    "watch": "vitest watch"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "devDependencies": {
-    "vitest": "^2.1.1"
+    "vitest": "^2.1.1",
+    "vite": "^5.3.1"
   }
 }
