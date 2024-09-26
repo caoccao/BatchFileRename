@@ -107,6 +107,7 @@ impl Config {
 pub struct ConfigPlugin {
   pub code: String,
   pub description: String,
+  pub id: String,
   pub name: String,
   pub options: Vec<ConfigPluginOption>,
 }

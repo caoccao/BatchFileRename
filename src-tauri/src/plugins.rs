@@ -32,6 +32,7 @@ fn get_built_in_plugins() -> Vec<ConfigPlugin> {
       description:
         "Capitalize every word of the file name and replace special characters with a given separator. The default separator is dot."
           .to_string(),
+      id: "4eec0c65-8267-4824-a8c0-1851b9858a81".to_string(),
       name: "Dot.Case".to_string(),
       options: vec![ConfigPluginOption {
         default_value: ".".to_string(),
@@ -41,6 +42,7 @@ fn get_built_in_plugins() -> Vec<ConfigPlugin> {
     ConfigPlugin {
       code: normalize_code(include_str!("../../scripts/js/plugin-to-lower-case.js")),
       description: "Convert all characters of the file name to lowercase.".to_string(),
+      id: "7c857ca3-d26e-45bb-adf7-a1800f3691b1".to_string(),
       name: "To lower case".to_string(),
       options: vec![ConfigPluginOption {
         default_value: "true".to_string(),
@@ -54,6 +56,7 @@ fn get_built_in_plugins() -> Vec<ConfigPlugin> {
     ConfigPlugin {
       code: normalize_code(include_str!("../../scripts/js/plugin-to-upper-case.js")),
       description: "Convert all characters of the file name to lowercase.".to_string(),
+      id: "afa82b1a-43de-439e-9f47-b6a666e40511".to_string(),
       name: "To UPPER CASE".to_string(),
       options: vec![ConfigPluginOption {
         default_value: "true".to_string(),

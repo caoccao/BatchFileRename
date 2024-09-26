@@ -26,8 +26,9 @@ export interface Config {
 export interface ConfigPlugin {
   code: string;
   description: string;
-  options: ConfigPluginOption[];
+  id: string;
   name: string;
+  options: ConfigPluginOption[];
 }
 
 export interface ConfigPluginOption {

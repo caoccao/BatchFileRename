@@ -18,6 +18,8 @@
 import { invoke } from "@tauri-apps/api/tauri";
 import { confirm } from "@tauri-apps/api/dialog";
 
+import * as uuid from "uuid";
+
 import React from "react";
 
 import Editor from "@monaco-editor/react";
@@ -360,6 +362,7 @@ function Settings(args: Args) {
         const plugin: ConfigPlugin = {
           code,
           description: pluginDescription,
+          id: uuid.v4(),
           name: pluginName,
           options: pluginOptions,
         };
