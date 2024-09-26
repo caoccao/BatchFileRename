@@ -41,6 +41,8 @@ import {
   DialogTitle,
   FormControlLabel,
   IconButton,
+  Menu,
+  MenuItem,
   Paper,
   Stack,
   Table,
@@ -54,6 +56,7 @@ import {
 } from "@mui/material";
 import {
   AddBoxOutlined as AddBoxOutlinedIcon,
+  AddchartOutlined as AddchartOutlinedIcon,
   AddCircleOutlineOutlined as AddCircleOutlineOutlinedIcon,
   DisabledByDefaultOutlined as DisabledByDefaultOutlinedIcon,
   EditNoteOutlined as EditNoteOutlinedIcon,
@@ -80,6 +83,11 @@ interface Args {
 }
 
 function Settings(args: Args) {
+  const [builtInPlugins, setBuiltInPlugins] = React.useState<ConfigPlugin[]>(
+    []
+  );
+  const [builtInPluginsMenuAnchorEl, setBuiltInPluginsMenuAnchorEl] =
+    React.useState<HTMLElement | null>(null);
   const [depth, setDepth] = React.useState(-1);
   const [dirty, setDirty] = React.useState(false);
   const [dialogPluginOpen, setDialogPluginOpen] = React.useState(false);
@@ -100,6 +108,17 @@ function Settings(args: Args) {
     ConfigPluginOption[]
   >([]);
   const [vim, setVim] = React.useState<any>(null);
+
+  const builtInPluginsNotInConfig = React.useMemo(() => {
+    const pluginIdSet = new Set(plugins.map((plugin) => plugin.id));
+    return builtInPlugins.filter(
+      (builtInPlugin) => !pluginIdSet.has(builtInPlugin.id)
+    );
+  }, [plugins, builtInPlugins]);
+
+  function onCloseBuiltInPluginsMenu() {
+    setBuiltInPluginsMenuAnchorEl(null);
+  }
 
   const onBlurExtensions = React.useCallback(
     (_event: React.FocusEvent<HTMLInputElement>) => {
@@ -220,6 +239,12 @@ function Settings(args: Args) {
     },
     [pluginOptions]
   );
+
+  function onClickButtonAddABuiltInPlugin(
+    event: React.MouseEvent<HTMLButtonElement, MouseEvent>
+  ) {
+    setBuiltInPluginsMenuAnchorEl(event.currentTarget);
+  }
 
   function onClickButtonAddPluginOption(
     _event: React.MouseEvent<HTMLButtonElement, MouseEvent>
@@ -347,6 +372,22 @@ function Settings(args: Args) {
     }
   }
 
+  const onClickMenuItemAddABuiltInPlugin = React.useCallback(
+    (plugin: ConfigPlugin) => {
+      setBuiltInPluginsMenuAnchorEl(null);
+      const newPlugins = [...plugins, plugin];
+      setPlugins(newPlugins);
+      setConfig(
+        depth,
+        extensionText,
+        filterByExtensions,
+        includeDirectories,
+        newPlugins
+      );
+    },
+    [depth, extensionText, filterByExtensions, includeDirectories, plugins]
+  );
+
   function onMountEditor(
     monacoEditor: editor.IStandaloneCodeEditor,
     _monaco: Monaco
@@ -435,6 +476,19 @@ function Settings(args: Args) {
       setPlugins(args.config.plugins);
     }
   }, [args.config]);
+
+  React.useEffect(() => {
+    invoke<ConfigPlugin[]>("get_built_in_plugins")
+      .then((value) => {
+        setBuiltInPlugins(value);
+      })
+      .catch((error) => {
+        args.setNotification({
+          message: `${error}`,
+          type: NotificationType.Error,
+        });
+      });
+  }, []);
 
   return (
     <React.Fragment>
@@ -571,16 +625,62 @@ function Settings(args: Args) {
               ))()}
           </CardContent>
           <CardActions disableSpacing sx={{ padding: "0px 15px 15px 15px" }}>
-            <Button
-              variant="outlined"
-              startIcon={<AddCircleOutlineOutlinedIcon />}
-              size="small"
-              fullWidth={false}
-              onClick={onClickButtonCreateANewPlugin}
-              sx={{ textTransform: "none" }}
-            >
-              Create a New Plugin
-            </Button>
+            <Stack direction="row" spacing={2}>
+              <Button
+                variant="outlined"
+                startIcon={<AddCircleOutlineOutlinedIcon />}
+                size="small"
+                fullWidth={false}
+                onClick={onClickButtonCreateANewPlugin}
+                sx={{ textTransform: "none" }}
+              >
+                Create a New Plugin
+              </Button>
+              {builtInPluginsNotInConfig.length > 0 ? (
+                <React.Fragment>
+                  <Button
+                    variant="outlined"
+                    startIcon={<AddchartOutlinedIcon />}
+                    size="small"
+                    fullWidth={false}
+                    id="button-add-a-built-in-plugin"
+                    aria-controls={
+                      builtInPluginsMenuAnchorEl != null
+                        ? "menu-add-a-built-in-plugin"
+                        : undefined
+                    }
+                    aria-haspopup="true"
+                    aria-expanded={
+                      builtInPluginsMenuAnchorEl != null ? "true" : undefined
+                    }
+                    onClick={onClickButtonAddABuiltInPlugin}
+                    sx={{ textTransform: "none" }}
+                  >
+                    Add a Built-in Plugin
+                  </Button>
+                  <Menu
+                    id="menu-add-a-built-in-plugin"
+                    anchorEl={builtInPluginsMenuAnchorEl}
+                    open={builtInPluginsMenuAnchorEl != null}
+                    onClose={onCloseBuiltInPluginsMenu}
+                    MenuListProps={{
+                      "aria-labelledby": "button-add-a-built-in-plugin",
+                    }}
+                  >
+                    {builtInPluginsNotInConfig.map((plugin) => (
+                      <MenuItem
+                        key={plugin.id}
+                        onClick={() => onClickMenuItemAddABuiltInPlugin(plugin)}
+                      >
+                        {plugin.name}
+                      </MenuItem>
+                    ))}
+                  </Menu>
+                </React.Fragment>
+              ) : (
+                <></>
+              )}
+            </Stack>
           </CardActions>
         </Card>
         <Button
