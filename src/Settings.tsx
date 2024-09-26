@@ -21,6 +21,7 @@ import { confirm } from "@tauri-apps/api/dialog";
 import * as uuid from "uuid";
 
 import React from "react";
+import Draggable, { DraggableData, DraggableEvent } from "react-draggable";
 
 import Editor from "@monaco-editor/react";
 import type { Monaco } from "@monaco-editor/react";
@@ -59,6 +60,7 @@ import {
   AddchartOutlined as AddchartOutlinedIcon,
   AddCircleOutlineOutlined as AddCircleOutlineOutlinedIcon,
   DisabledByDefaultOutlined as DisabledByDefaultOutlinedIcon,
+  DragIndicatorOutlined as DragIndicatorOutlinedIcon,
   EditNoteOutlined as EditNoteOutlinedIcon,
   HighlightOffOutlined as HighlightOffOutlinedIcon,
   SaveOutlined as SaveOutlinedIcon,
@@ -107,6 +109,7 @@ function Settings(args: Args) {
   const [pluginOptions, setPluginOptions] = React.useState<
     ConfigPluginOption[]
   >([]);
+  const pluginTableBodyRef = React.useRef<HTMLTableElement>(null);
   const [vim, setVim] = React.useState<any>(null);
 
   const builtInPluginsNotInConfig = React.useMemo(() => {
@@ -388,6 +391,27 @@ function Settings(args: Args) {
     [depth, extensionText, filterByExtensions, includeDirectories, plugins]
   );
 
+  const onDragPlugin = React.useCallback(
+    (event: DraggableEvent, data: DraggableData, index: number) => {
+      console.log(`onDrag ${index} x=${data.x} y=${data.y}`, event);
+    },
+    [plugins]
+  );
+
+  const onDragStartPlugin = React.useCallback(
+    (index: number) => {
+      console.log(`onDragStart ${index}`);
+    },
+    [plugins]
+  );
+
+  const onDragStopPlugin = React.useCallback(
+    (index: number) => {
+      console.log(`onDragStop ${index}`);
+    },
+    [plugins]
+  );
+
   function onMountEditor(
     monacoEditor: editor.IStandaloneCodeEditor,
     _monaco: Monaco
@@ -575,14 +599,14 @@ function Settings(args: Args) {
             {(() =>
               plugins.length > 0 ? (
                 <TableContainer component={Paper}>
-                  <Table size="small">
+                  <Table size="small" ref={pluginTableBodyRef}>
                     <TableHead>
                       <TableRow>
                         <TableCell>Name</TableCell>
                         <TableCell>Description</TableCell>
                         <TableCell
                           align="center"
-                          sx={{ width: 50, maxWidth: 50 }}
+                          sx={{ width: 80, maxWidth: 80 }}
                         >
                           Action
                         </TableCell>
@@ -590,32 +614,45 @@ function Settings(args: Args) {
                     </TableHead>
                     <TableBody>
                       {plugins.map((plugin, index) => (
-                        <TableRow key={index}>
-                          <TableCell>{plugin.name}</TableCell>
-                          <TableCell>{plugin.description}</TableCell>
-                          <TableCell>
-                            <Stack direction="row" spacing={0}>
-                              <IconButton
-                                aria-label="Edit"
-                                color="primary"
-                                onClick={() => {
-                                  onClickButtonEditPlugin(index);
-                                }}
-                              >
-                                <EditNoteOutlinedIcon fontSize="small" />
-                              </IconButton>
-                              <IconButton
-                                aria-label="Delete"
-                                color="primary"
-                                onClick={() => {
-                                  onClickButtonDeletePlugin(index);
-                                }}
-                              >
-                                <HighlightOffOutlinedIcon fontSize="small" />
-                              </IconButton>
-                            </Stack>
-                          </TableCell>
-                        </TableRow>
+                        <Draggable
+                          axis="y"
+                          scale={1}
+                          onStart={() => onDragStartPlugin(index)}
+                          onDrag={(event, data) =>
+                            onDragPlugin(event, data, index)
+                          }
+                          onStop={() => onDragStopPlugin(index)}
+                        >
+                          <TableRow key={index}>
+                            <TableCell>{plugin.name}</TableCell>
+                            <TableCell>{plugin.description}</TableCell>
+                            <TableCell>
+                              <Stack direction="row" spacing={0}>
+                                <IconButton
+                                  aria-label="Edit"
+                                  color="primary"
+                                  onClick={() => {
+                                    onClickButtonEditPlugin(index);
+                                  }}
+                                >
+                                  <EditNoteOutlinedIcon fontSize="small" />
+                                </IconButton>
+                                <IconButton
+                                  aria-label="Delete"
+                                  color="primary"
+                                  onClick={() => {
+                                    onClickButtonDeletePlugin(index);
+                                  }}
+                                >
+                                  <HighlightOffOutlinedIcon fontSize="small" />
+                                </IconButton>
+                                <IconButton aria-label="Move" color="primary">
+                                  <DragIndicatorOutlinedIcon fontSize="small" />
+                                </IconButton>
+                              </Stack>
+                            </TableCell>
+                          </TableRow>
+                        </Draggable>
                       ))}
                     </TableBody>
                   </Table>
