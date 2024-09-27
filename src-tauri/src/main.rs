@@ -1,6 +1,8 @@
 // Prevents additional console window on Windows in release, DO NOT REMOVE!!
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
+use tauri::Manager;
+
 mod config;
 mod controller;
 mod plugins;
@@ -56,6 +58,11 @@ async fn set_config(config: config::Config) -> Result<config::Config, String> {
 fn main() {
   env_logger::init();
   tauri::Builder::default()
+    .setup(|app| {
+      let window = app.get_window("main").unwrap();
+      let _ = window.set_title("Batch File Rename v0.2.0");
+      Ok(())
+    })
     .invoke_handler(tauri::generate_handler![
       get_built_in_plugins,
       get_config,
