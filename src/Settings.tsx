@@ -109,7 +109,15 @@ function Settings(args: Args) {
   const [pluginOptions, setPluginOptions] = React.useState<
     ConfigPluginOption[]
   >([]);
-  const pluginTableBodyRef = React.useRef<HTMLTableElement>(null);
+  const pluginTableRef = React.useRef<HTMLTableElement>(null);
+  const [pluginTableRowHeight, setPluginTableRowHeight] = React.useState<
+    number | null
+  >(null);
+  const [pluginTableRowPosition, setPluginTableRowPosition] = React.useState<{
+    index: number;
+    x: number;
+    y: number;
+  } | null>(null);
   const [vim, setVim] = React.useState<any>(null);
 
   const builtInPluginsNotInConfig = React.useMemo(() => {
@@ -392,24 +400,86 @@ function Settings(args: Args) {
   );
 
   const onDragPlugin = React.useCallback(
-    (event: DraggableEvent, data: DraggableData, index: number) => {
-      console.log(`onDrag ${index} x=${data.x} y=${data.y}`, event);
+    (_event: DraggableEvent, data: DraggableData, index: number) => {
+      const position = { index, x: data.x, y: data.y };
+      setPluginTableRowPosition(position);
     },
     [plugins]
   );
 
   const onDragStartPlugin = React.useCallback(
-    (index: number) => {
-      console.log(`onDragStart ${index}`);
+    (_index: number) => {
+      setPluginTableRowPosition(null);
+      const rowElements = pluginTableRef.current?.children[1].children;
+      if (rowElements && rowElements.length > 0) {
+        const height =
+          [...rowElements]
+            .map((node) => node.getBoundingClientRect().height)
+            .reduce((a, b) => a + b, 0) / rowElements.length;
+        setPluginTableRowHeight(height);
+      } else {
+        setPluginTableRowHeight(null);
+      }
     },
     [plugins]
   );
 
   const onDragStopPlugin = React.useCallback(
     (index: number) => {
-      console.log(`onDragStop ${index}`);
+      if (pluginTableRowPosition) {
+        if (index === pluginTableRowPosition.index) {
+          if (
+            pluginTableRowHeight !== null &&
+            index >= 0 &&
+            index < plugins.length
+          ) {
+            const rowElements = pluginTableRef.current?.children[1].children;
+            if (rowElements && rowElements.length > 0) {
+              const newIndex = Math.min(
+                Math.max(
+                  0,
+                  Math.round(pluginTableRowPosition.y / pluginTableRowHeight) +
+                    index
+                ),
+                plugins.length - 1
+              );
+              [...rowElements].forEach((node) => {
+                (node as HTMLTableRowElement).style.transform =
+                  "translate(0px, 0px)";
+              });
+              if (newIndex !== index) {
+                const newPlugins = [...plugins];
+                newPlugins[index] = plugins[newIndex];
+                newPlugins[newIndex] = plugins[index];
+                setPlugins(newPlugins);
+                setConfig(
+                  depth,
+                  extensionText,
+                  filterByExtensions,
+                  includeDirectories,
+                  newPlugins
+                );
+              }
+            }
+          }
+        } else {
+          console.error(
+            `Invalid index ${index} and ${pluginTableRowPosition.index}`
+          );
+        }
+      }
+      setPluginTableRowPosition(null);
+      setPluginTableRowHeight(null);
     },
-    [plugins]
+    [
+      depth,
+      extensionText,
+      filterByExtensions,
+      includeDirectories,
+      plugins,
+      pluginTableRowPosition,
+      pluginTableRowHeight,
+    ]
   );
 
   function onMountEditor(
@@ -599,7 +669,7 @@ function Settings(args: Args) {
             {(() =>
               plugins.length > 0 ? (
                 <TableContainer component={Paper}>
-                  <Table size="small" ref={pluginTableBodyRef}>
+                  <Table size="small" ref={pluginTableRef}>
                     <TableHead>
                       <TableRow>
                         <TableCell>Name</TableCell>
@@ -616,6 +686,7 @@ function Settings(args: Args) {
                       {plugins.map((plugin, index) => (
                         <Draggable
                           axis="y"
+                          key={plugin.id}
                           scale={1}
                           onStart={() => onDragStartPlugin(index)}
                           onDrag={(event, data) =>
@@ -623,7 +694,7 @@ function Settings(args: Args) {
                           }
                           onStop={() => onDragStopPlugin(index)}
                         >
-                          <TableRow key={index}>
+                          <TableRow key={plugin.id}>
                             <TableCell>{plugin.name}</TableCell>
                             <TableCell>{plugin.description}</TableCell>
                             <TableCell>
