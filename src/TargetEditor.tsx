@@ -360,33 +360,27 @@ function TargetEditor(args: Args) {
     <React.Fragment>
       <Box sx={{ width: "100%" }}>
         <Stack direction="row" spacing={2} sx={{ mb: "5px" }}>
-          <Button
-            variant="outlined"
-            startIcon={<ContentCopyOutlinedIcon />}
-            size="small"
-            onClick={onClickCopy}
-            sx={{ textTransform: "none" }}
-          >
-            Copy
-          </Button>
-          <Button
-            variant="outlined"
-            startIcon={<SaveOutlinedIcon />}
-            size="small"
-            onClick={onClickSave}
-            sx={{ textTransform: "none" }}
-          >
-            Save
-          </Button>
-          <Button
-            variant={vim ? "contained" : "outlined"}
-            startIcon={<TerminalOutlinedIcon />}
-            size="small"
-            onClick={onClickVimMode}
-            sx={{ textTransform: "none" }}
-          >
-            Vim Mode
-          </Button>
+          <ButtonGroup variant="outlined">
+            <Tooltip arrow title="Copy">
+              <Button variant="outlined" size="small" onClick={onClickCopy}>
+                <ContentCopyOutlinedIcon fontSize="small" />
+              </Button>
+            </Tooltip>
+            <Tooltip arrow title="Save">
+              <Button variant="outlined" size="small" onClick={onClickSave}>
+                <SaveOutlinedIcon fontSize="small" />
+              </Button>
+            </Tooltip>
+            <Button
+              variant={vim ? "contained" : "outlined"}
+              startIcon={<TerminalOutlinedIcon />}
+              size="small"
+              onClick={onClickVimMode}
+              sx={{ textTransform: "none" }}
+            >
+              Vim Mode
+            </Button>
+          </ButtonGroup>
           {args.config?.plugins && args.config.plugins.length > 0 ? (
             <React.Fragment>
               <ButtonGroup variant="outlined" ref={pluginMenuRef}>

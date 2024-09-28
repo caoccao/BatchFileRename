@@ -23,7 +23,7 @@ import Editor from "@monaco-editor/react";
 import type { Monaco } from "@monaco-editor/react";
 import { editor } from "monaco-editor";
 
-import { Box, Button, Stack } from "@mui/material";
+import { Box, Button, ButtonGroup, Stack, Tooltip } from "@mui/material";
 import { ContentCopyOutlined as ContentCopyOutlinedIcon } from "@mui/icons-material";
 
 import { Item } from "./lib/Protocol";
@@ -52,15 +52,13 @@ function SourceEditor(args: Args) {
   return (
     <Box sx={{ width: "100%" }}>
       <Stack direction="row" spacing={2} sx={{ mb: "5px" }}>
-        <Button
-          variant="outlined"
-          startIcon={<ContentCopyOutlinedIcon />}
-          size="small"
-          onClick={onClickCopy}
-          sx={{ textTransform: "none" }}
-        >
-          Copy
-        </Button>
+        <ButtonGroup variant="outlined">
+          <Tooltip arrow title="Copy">
+            <Button variant="outlined" size="small" onClick={onClickCopy}>
+              <ContentCopyOutlinedIcon fontSize="small" />
+            </Button>
+          </Tooltip>
+        </ButtonGroup>
       </Stack>
       <Editor
         height="calc(100vh - 200px)"
