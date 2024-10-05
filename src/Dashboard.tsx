@@ -15,7 +15,7 @@
  *   limitations under the License.
  */
 
-import { invoke } from "@tauri-apps/api/tauri";
+import { invoke } from "@tauri-apps/api/core";
 
 import React from "react";
 

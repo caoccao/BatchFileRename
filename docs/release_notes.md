@@ -1,5 +1,9 @@
 # Release Notes
 
+## 0.2.0
+
+- Upgraded tauri to v2
+
 ## 0.1.0
 
 - Batch edit files or directories in a code editor

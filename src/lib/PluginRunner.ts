@@ -21,17 +21,20 @@ import {
 } from "@tauri-apps/api/path";
 import { ConfigPlugin, Item } from "./Protocol";
 
+const delimiter = tauriApiPathDelimiter();
+const sep = tauriApiPathSep();
+
 const path = Object.freeze({
   basename: (p: string): string => {
-    const index = p.lastIndexOf(tauriApiPathSep);
+    const index = p.lastIndexOf(sep);
     if (index < 0) {
       return p;
     }
     return p.substring(index + 1);
   },
-  delimiter: tauriApiPathDelimiter,
+  delimiter,
   dirname: (p: string): string => {
-    const index = p.lastIndexOf(tauriApiPathSep);
+    const index = p.lastIndexOf(sep);
     if (index < 0) {
       return "";
     }
@@ -51,9 +54,9 @@ const path = Object.freeze({
         throw new TypeError("Arguments must be strings");
       }
     });
-    return paths.join(tauriApiPathSep);
+    return paths.join(sep);
   },
-  sep: tauriApiPathSep,
+  sep,
 });
 
 export function runPlugin(

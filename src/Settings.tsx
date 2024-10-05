@@ -15,8 +15,8 @@
  *   limitations under the License.
  */
 
-import { invoke } from "@tauri-apps/api/tauri";
-import { confirm } from "@tauri-apps/api/dialog";
+import { invoke } from "@tauri-apps/api/core";
+import { confirm } from "@tauri-apps/plugin-dialog";
 
 import * as uuid from "uuid";
 
@@ -358,7 +358,7 @@ function Settings(args: Args) {
           "Are you sure you want to discard your changes?",
           {
             title: "Discard changes?",
-            type: "warning",
+            kind: "warning",
           }
         );
       }

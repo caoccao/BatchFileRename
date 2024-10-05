@@ -20,10 +20,9 @@ import "@fontsource/roboto/400.css";
 import "@fontsource/roboto/500.css";
 import "@fontsource/roboto/700.css";
 
-import { appWindow } from "@tauri-apps/api/window";
-import { invoke } from "@tauri-apps/api/tauri";
+import { getCurrentWindow, type DragDropEvent } from "@tauri-apps/api/window";
+import { invoke } from "@tauri-apps/api/core";
 import type { Event, UnlistenFn } from "@tauri-apps/api/event";
-import type { FileDropEvent } from "@tauri-apps/api/window";
 
 import React from "react";
 import { Box, Tab, Tabs } from "@mui/material";
@@ -167,8 +166,8 @@ function App() {
 
   React.useEffect(() => {
     let cancelFileDrop: UnlistenFn | null = null;
-    appWindow
-      .onFileDropEvent((event: Event<FileDropEvent>) => {
+    getCurrentWindow()
+      .onDragDropEvent((event: Event<DragDropEvent>) => {
         if (event.payload.type === "drop") {
           const paths = event.payload.paths;
           const newItems = paths.map((path) => ({

@@ -15,7 +15,7 @@
  *   limitations under the License.
  */
 
-import { writeText } from "@tauri-apps/api/clipboard";
+import { writeText } from "@tauri-apps/plugin-clipboard-manager";
 
 import React from "react";
 
