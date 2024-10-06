@@ -26,3 +26,4 @@ testPlugin(dotCase, "/test/a &b&c.x", "/test/A.and.B.and.C.x", options);
 testPlugin(dotCase, "/test/a &,& b(&&)c.x", "/test/A.and.B.and.C.x", options);
 testPlugin(dotCase, "/test/abc,=,def.x", "/test/Abc.Def.x", options);
 testPlugin(dotCase, "/test/aBC,OF,dEF.x", "/test/ABC.of.DEF.x", options);
+testPlugin(dotCase, "/test/123.the.abc.x", "/test/123.The.Abc.x", options);

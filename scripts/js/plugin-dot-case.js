@@ -93,13 +93,15 @@ export function dotCase($args) {
       if (position < name.length) {
         words.push(name.substring(position));
       }
+      let isFirstWord = true;
       const newName = words
         .filter((word) => word.length > 0)
-        .map((word, index) => {
-          if (index == 0) {
+        .map((word) => {
+          const match = word.match(/^[a-z]+/i);
+          if (isFirstWord && match) {
+            isFirstWord = false;
             return word[0].toUpperCase() + word.substring(1);
           } else {
-            const match = word.match(/^[a-z]+/i);
             if (match) {
               const lowerCasedWord = match[0].toLowerCase();
               if (ignoredUncapitalizedWordSet.has(lowerCasedWord)) {
