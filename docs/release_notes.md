@@ -3,6 +3,11 @@
 ## 0.2.0
 
 - Upgraded tauri to v2
+- Added plugin option type
+  - Boolean
+  - Double
+  - Integer
+  - String
 
 ## 0.1.0
 
