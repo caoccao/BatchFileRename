@@ -25,16 +25,8 @@ export function toUpperCase($args) {
       const parentPath = $modules.path.dirname(targetPath);
       const ext = $modules.path.extname(targetPath);
       const name = baseName.substring(0, baseName.length - ext.length);
-      const newName = ["1", "true", "yes"].includes(
-        $options.includeName.toString().toLowerCase()
-      )
-        ? name.toUpperCase()
-        : name;
-      const newExt = ["1", "true", "yes"].includes(
-        $options.includeExtension.toString().toLowerCase()
-      )
-        ? ext.toUpperCase()
-        : ext;
+      const newName = $options.includeName ? name.toUpperCase() : name;
+      const newExt = $options.includeExtension ? ext.toUpperCase() : ext;
       targetItem.targetPath = $modules.path.join(
         parentPath,
         `${newName}${newExt}`

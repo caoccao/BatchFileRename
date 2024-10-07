@@ -45,6 +45,10 @@ import {
   Menu,
   MenuItem,
   Paper,
+  Radio,
+  RadioGroup,
+  Select,
+  SelectChangeEvent,
   Stack,
   Table,
   TableBody,
@@ -71,6 +75,11 @@ import {
   Config,
   ConfigPlugin,
   ConfigPluginOption,
+  ConfigPluginOptionBoolean,
+  ConfigPluginOptionDouble,
+  ConfigPluginOptionInteger,
+  ConfigPluginOptionString,
+  ConfigPluginOptionType,
   Notification,
   NotificationType,
 } from "./lib/Protocol";
@@ -82,6 +91,23 @@ interface Args {
     React.SetStateAction<boolean>
   >;
   setNotification: React.Dispatch<React.SetStateAction<Notification | null>>;
+}
+
+function isConfigPluginOptionEmpty(option: ConfigPluginOption) {
+  if (option.name && option.name !== "") {
+    return false;
+  }
+  switch (option.type) {
+    case ConfigPluginOptionType.String:
+      const defaultValue = (option as ConfigPluginOptionString).defaultValue;
+      return (
+        defaultValue === null ||
+        defaultValue === undefined ||
+        defaultValue === ""
+      );
+    default:
+      return false;
+  }
 }
 
 function Settings(args: Args) {
@@ -217,16 +243,58 @@ function Settings(args: Args) {
     [pluginName]
   );
 
-  const onChangePluginOptionDefaultValue = React.useCallback(
+  const onChangePluginOptionDefaultValueRadio = React.useCallback(
+    (value: boolean, index: number) => {
+      if (index >= 0 && index < pluginOptions.length) {
+        const newPluginOption: ConfigPluginOptionBoolean = {
+          ...pluginOptions[index],
+          defaultValue: value,
+        };
+        setPluginDirty(true);
+        setPluginOptions([
+          ...pluginOptions.slice(0, index),
+          newPluginOption,
+          ...pluginOptions.slice(index + 1),
+        ]);
+      }
+    },
+    [pluginOptions]
+  );
+
+  const onChangePluginOptionDefaultValueTextField = React.useCallback(
     (
       event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
       index: number
     ) => {
       if (index >= 0 && index < pluginOptions.length) {
+        const newPluginOption: ConfigPluginOption = {
+          ...pluginOptions[index],
+        };
+        switch (newPluginOption.type) {
+          case ConfigPluginOptionType.Double:
+            (newPluginOption as ConfigPluginOptionDouble).defaultValue = Number(
+              event.target.value
+            );
+            break;
+          case ConfigPluginOptionType.Integer:
+            (newPluginOption as ConfigPluginOptionInteger).defaultValue =
+              Math.round(Number(event.target.value));
+            break;
+          case ConfigPluginOptionType.String:
+            (newPluginOption as ConfigPluginOptionString).defaultValue = String(
+              event.target.value
+            );
+            break;
+          default:
+            console.error(
+              `Unknown plugin option type: ${newPluginOption.type}`
+            );
+            break;
+        }
         setPluginDirty(true);
         setPluginOptions([
           ...pluginOptions.slice(0, index),
-          { ...pluginOptions[index], defaultValue: event.target.value },
+          newPluginOption,
           ...pluginOptions.slice(index + 1),
         ]);
       }
@@ -251,6 +319,61 @@ function Settings(args: Args) {
     [pluginOptions]
   );
 
+  const onChangePluginOptionType = React.useCallback(
+    (event: SelectChangeEvent<ConfigPluginOptionType>, index: number) => {
+      if (index >= 0 && index < pluginOptions.length) {
+        setPluginDirty(true);
+        switch (event.target.value as ConfigPluginOptionType) {
+          case ConfigPluginOptionType.Boolean:
+            setPluginOptions([
+              ...pluginOptions.slice(0, index),
+              {
+                name: pluginOptions[index].name,
+                type: ConfigPluginOptionType.Boolean,
+                defaultValue: false,
+              },
+              ...pluginOptions.slice(index + 1),
+            ]);
+            break;
+          case ConfigPluginOptionType.Double:
+            setPluginOptions([
+              ...pluginOptions.slice(0, index),
+              {
+                name: pluginOptions[index].name,
+                type: ConfigPluginOptionType.Double,
+                defaultValue: 0,
+              },
+              ...pluginOptions.slice(index + 1),
+            ]);
+            break;
+          case ConfigPluginOptionType.Integer:
+            setPluginOptions([
+              ...pluginOptions.slice(0, index),
+              {
+                name: pluginOptions[index].name,
+                type: ConfigPluginOptionType.Integer,
+                defaultValue: 0,
+              },
+              ...pluginOptions.slice(index + 1),
+            ]);
+            break;
+          case ConfigPluginOptionType.String:
+            setPluginOptions([
+              ...pluginOptions.slice(0, index),
+              {
+                name: pluginOptions[index].name,
+                type: ConfigPluginOptionType.String,
+                defaultValue: "",
+              },
+              ...pluginOptions.slice(index + 1),
+            ]);
+            break;
+        }
+      }
+    },
+    [pluginOptions]
+  );
+
   function onClickButtonAddABuiltInPlugin(
     event: React.MouseEvent<HTMLButtonElement, MouseEvent>
   ) {
@@ -262,14 +385,12 @@ function Settings(args: Args) {
   ) {
     setDirty(true);
     setPluginOptions([
-      ...pluginOptions.filter(
-        (options) =>
-          options.name &&
-          options.name !== "" &&
-          options.defaultValue &&
-          options.defaultValue !== ""
-      ),
-      { name: "", defaultValue: "" },
+      ...pluginOptions.filter((option) => !isConfigPluginOptionEmpty(option)),
+      {
+        type: ConfigPluginOptionType.String,
+        name: "",
+        defaultValue: "",
+      } as ConfigPluginOption,
     ]);
   }
 
@@ -497,7 +618,7 @@ function Settings(args: Args) {
         const plugin: ConfigPlugin = {
           code,
           description: pluginDescription,
-          id: uuid.v4(),
+          id: pluginIndex >= 0 ? plugins[pluginIndex].id : uuid.v4(),
           name: pluginName,
           options: pluginOptions,
         };
@@ -926,6 +1047,7 @@ function Settings(args: Args) {
                         <TableHead>
                           <TableRow>
                             <TableCell>Name</TableCell>
+                            <TableCell>Type</TableCell>
                             <TableCell>Default Value</TableCell>
                             <TableCell align="center">Action</TableCell>
                           </TableRow>
@@ -945,18 +1067,114 @@ function Settings(args: Args) {
                                 />
                               </TableCell>
                               <TableCell>
-                                <TextField
-                                  fullWidth
+                                <Select
+                                  value={option.type}
                                   size="small"
-                                  value={option.defaultValue}
-                                  onChange={(event) => {
-                                    onChangePluginOptionDefaultValue(
-                                      event,
-                                      index
-                                    );
-                                  }}
-                                  placeholder="Default Value"
-                                />
+                                  onChange={(event) =>
+                                    onChangePluginOptionType(event, index)
+                                  }
+                                >
+                                  <MenuItem
+                                    value={ConfigPluginOptionType.Boolean}
+                                  >
+                                    Boolean
+                                  </MenuItem>
+                                  <MenuItem
+                                    value={ConfigPluginOptionType.Double}
+                                  >
+                                    Double
+                                  </MenuItem>
+                                  <MenuItem
+                                    value={ConfigPluginOptionType.Integer}
+                                  >
+                                    Integer
+                                  </MenuItem>
+                                  <MenuItem
+                                    value={ConfigPluginOptionType.String}
+                                  >
+                                    String
+                                  </MenuItem>
+                                </Select>
+                              </TableCell>
+                              <TableCell>
+                                {option.type ===
+                                ConfigPluginOptionType.Boolean ? (
+                                  <RadioGroup
+                                    row
+                                    name="row-radio-group-config-plugin-option-type-boolean"
+                                  >
+                                    <FormControlLabel
+                                      value="true"
+                                      control={
+                                        <Radio
+                                          size="small"
+                                          checked={
+                                            (
+                                              option as ConfigPluginOptionBoolean
+                                            ).defaultValue
+                                          }
+                                          onChange={() => {
+                                            onChangePluginOptionDefaultValueRadio(
+                                              true,
+                                              index
+                                            );
+                                          }}
+                                        />
+                                      }
+                                      label="true"
+                                    />
+                                    <FormControlLabel
+                                      value="false"
+                                      control={
+                                        <Radio
+                                          size="small"
+                                          checked={
+                                            !(
+                                              option as ConfigPluginOptionBoolean
+                                            ).defaultValue
+                                          }
+                                          onChange={() => {
+                                            onChangePluginOptionDefaultValueRadio(
+                                              false,
+                                              index
+                                            );
+                                          }}
+                                        />
+                                      }
+                                      label="false"
+                                    />
+                                  </RadioGroup>
+                                ) : (
+                                  <TextField
+                                    fullWidth
+                                    size="small"
+                                    type={
+                                      option.type ===
+                                      ConfigPluginOptionType.String
+                                        ? "text"
+                                        : "number"
+                                    }
+                                    value={option.defaultValue}
+                                    onChange={(event) => {
+                                      onChangePluginOptionDefaultValueTextField(
+                                        event,
+                                        index
+                                      );
+                                    }}
+                                    placeholder="Default Value"
+                                    slotProps={{
+                                      htmlInput: {
+                                        style: {
+                                          textAlign:
+                                            option.type ===
+                                            ConfigPluginOptionType.String
+                                              ? "left"
+                                              : "right",
+                                        },
+                                      },
+                                    }}
+                                  />
+                                )}
                               </TableCell>
                               <TableCell align="center">
                                 <IconButton

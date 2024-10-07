@@ -18,7 +18,7 @@
 import { testPlugin } from "./test-utils.js";
 import { toLowerCase } from "./plugin-to-lower-case.js";
 
-const options = { includeName: "true", includeExtension: "false" };
+const options = { includeName: true, includeExtension: false };
 
 testPlugin(toLowerCase, null, null, options);
 testPlugin(toLowerCase, "/test/a b c.x", "/test/a b c.x", options);
@@ -26,7 +26,7 @@ testPlugin(toLowerCase, "/test/A B C.x", "/test/a b c.x", options);
 testPlugin(toLowerCase, "/test/A B C.X", "/test/a b c.X", options);
 testPlugin(toLowerCase, "/test/AaA BbB CcC.X", "/test/aaa bbb ccc.X", options);
 
-options.includeExtension = "true";
+options.includeExtension = true;
 
 testPlugin(toLowerCase, null, null, options);
 testPlugin(toLowerCase, "/test/a b c.x", "/test/a b c.x", options);
@@ -34,8 +34,8 @@ testPlugin(toLowerCase, "/test/A B C.x", "/test/a b c.x", options);
 testPlugin(toLowerCase, "/test/A B C.X", "/test/a b c.x", options);
 testPlugin(toLowerCase, "/test/AaA BbB CcC.X", "/test/aaa bbb ccc.x", options);
 
-options.includeName = "false";
-options.includeExtension = "false";
+options.includeName = false;
+options.includeExtension = false;
 
 testPlugin(toLowerCase, null, null, options);
 testPlugin(toLowerCase, "/test/a b c.x", "/test/a b c.x", options);
@@ -43,7 +43,7 @@ testPlugin(toLowerCase, "/test/A B C.x", "/test/A B C.x", options);
 testPlugin(toLowerCase, "/test/A B C.X", "/test/A B C.X", options);
 testPlugin(toLowerCase, "/test/AaA BbB CcC.X", "/test/AaA BbB CcC.X", options);
 
-options.includeExtension = "true";
+options.includeExtension = true;
 
 testPlugin(toLowerCase, null, null, options);
 testPlugin(toLowerCase, "/test/a b c.x", "/test/a b c.x", options);

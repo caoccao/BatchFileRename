@@ -61,7 +61,7 @@ const path = Object.freeze({
 
 export function runPlugin(
   plugin: ConfigPlugin,
-  options: Record<string, string>,
+  options: Record<string, boolean | number | string>,
   items: Item[],
   targetPathsString: string
 ): string {

@@ -25,16 +25,8 @@ export function toLowerCase($args) {
       const parentPath = $modules.path.dirname(targetPath);
       const ext = $modules.path.extname(targetPath);
       const name = baseName.substring(0, baseName.length - ext.length);
-      const newName = ["1", "true", "yes"].includes(
-        $options.includeName.toString().toLowerCase()
-      )
-        ? name.toLowerCase()
-        : name;
-      const newExt = ["1", "true", "yes"].includes(
-        $options.includeExtension.toString().toLowerCase()
-      )
-        ? ext.toLowerCase()
-        : ext;
+      const newName = $options.includeName ? name.toLowerCase() : name;
+      const newExt = $options.includeExtension ? ext.toLowerCase() : ext;
       targetItem.targetPath = $modules.path.join(
         parentPath,
         `${newName}${newExt}`

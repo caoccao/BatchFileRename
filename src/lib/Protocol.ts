@@ -31,9 +31,29 @@ export interface ConfigPlugin {
   options: ConfigPluginOption[];
 }
 
-export interface ConfigPluginOption {
-  defaultValue: string;
+export interface ConfigPluginOption<T = boolean | number | string> {
+  defaultValue: T;
   name: string;
+  type: ConfigPluginOptionType;
+}
+
+export interface ConfigPluginOptionBoolean extends ConfigPluginOption<boolean> {
+}
+
+export interface ConfigPluginOptionDouble extends ConfigPluginOption<number> {
+}
+
+export interface ConfigPluginOptionInteger extends ConfigPluginOption<number> {
+}
+
+export interface ConfigPluginOptionString extends ConfigPluginOption<string> {
+}
+
+export enum ConfigPluginOptionType {
+  Boolean = "Boolean",
+  Double = "Double",
+  Integer = "Integer",
+  String = "String",
 }
 
 export interface Item {

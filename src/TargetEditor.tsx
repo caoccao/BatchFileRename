@@ -27,11 +27,14 @@ import {
   DialogActions,
   DialogContent,
   DialogTitle,
+  FormControlLabel,
   Grow,
   MenuItem,
   MenuList,
   Paper,
   Popper,
+  Radio,
+  RadioGroup,
   Stack,
   Table,
   TableBody,
@@ -61,6 +64,7 @@ import { initVimMode } from "monaco-vim";
 import {
   Config,
   ConfigPlugin,
+  ConfigPluginOptionType,
   Item,
   Notification,
   NotificationType,
@@ -85,14 +89,13 @@ interface CustomOptionArgs {
 }
 
 function CustomOption(args: CustomOptionArgs) {
-  const [options, setOptions] = React.useState<Record<string, string>>({});
+  const [options, setOptions] = React.useState<
+    Record<string, boolean | number | string>
+  >({});
 
   const onChangePluginOption = React.useCallback(
-    (
-      name: string,
-      event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
-    ) => {
-      setOptions({ ...options, [name]: event.target.value });
+    (name: string, value: boolean | number | string) => {
+      setOptions({ ...options, [name]: value });
     },
     [args.plugin, options]
   );
@@ -129,7 +132,7 @@ function CustomOption(args: CustomOptionArgs) {
 
   React.useEffect(() => {
     if (args.plugin) {
-      const newOptions: Record<string, string> = {};
+      const newOptions: Record<string, boolean | number | string> = {};
       args.plugin.options.forEach((option) => {
         newOptions[option.name] = option.defaultValue;
       });
@@ -171,31 +174,119 @@ function CustomOption(args: CustomOptionArgs) {
               Options
             </legend>
             {(() =>
-              Object.keys(options).length > 0 ? (
+              args.plugin && args.plugin.options.length > 0 ? (
                 <TableContainer component={Paper}>
                   <Table size="small">
                     <TableHead>
                       <TableRow>
                         <TableCell>Name</TableCell>
+                        <TableCell>Type</TableCell>
                         <TableCell>Value</TableCell>
                       </TableRow>
                     </TableHead>
                     <TableBody>
-                      {Object.entries(options).map(([name, value]) => (
-                        <TableRow key={name}>
+                      {args.plugin.options.map((option, index) => (
+                        <TableRow key={option.name}>
                           <TableCell>
-                            <Typography>{name}</Typography>
+                            <Typography>{option.name}</Typography>
                           </TableCell>
                           <TableCell>
-                            <TextField
-                              fullWidth
-                              size="small"
-                              value={value}
-                              onChange={(event) => {
-                                onChangePluginOption(name, event);
-                              }}
-                              placeholder="Default Value"
-                            />
+                            <Typography>{option.type}</Typography>
+                          </TableCell>
+                          <TableCell>
+                            {(() => {
+                              switch (option.type) {
+                                case ConfigPluginOptionType.Boolean:
+                                  return (
+                                    <RadioGroup
+                                      row
+                                      name={`row-radio-group-config-plugin-option-${index}`}
+                                    >
+                                      <FormControlLabel
+                                        value="true"
+                                        control={
+                                          <Radio
+                                            size="small"
+                                            checked={
+                                              options[option.name] as boolean
+                                            }
+                                            onChange={() => {
+                                              onChangePluginOption(
+                                                option.name,
+                                                true
+                                              );
+                                            }}
+                                          />
+                                        }
+                                        label="true"
+                                      />
+                                      <FormControlLabel
+                                        value="false"
+                                        control={
+                                          <Radio
+                                            size="small"
+                                            checked={
+                                              !(options[option.name] as boolean)
+                                            }
+                                            onChange={() => {
+                                              onChangePluginOption(
+                                                option.name,
+                                                false
+                                              );
+                                            }}
+                                          />
+                                        }
+                                        label="false"
+                                      />
+                                    </RadioGroup>
+                                  );
+                                case ConfigPluginOptionType.Double:
+                                  return (
+                                    <TextField
+                                      fullWidth
+                                      size="small"
+                                      value={options[option.name]}
+                                      onChange={(event) => {
+                                        onChangePluginOption(
+                                          option.name,
+                                          Number(event.target.value)
+                                        );
+                                      }}
+                                      placeholder="Default Value"
+                                    />
+                                  );
+                                case ConfigPluginOptionType.Integer:
+                                  return (
+                                    <TextField
+                                      fullWidth
+                                      size="small"
+                                      value={options[option.name]}
+                                      onChange={(event) => {
+                                        onChangePluginOption(
+                                          option.name,
+                                          Math.round(Number(event.target.value))
+                                        );
+                                      }}
+                                      placeholder="Default Value"
+                                    />
+                                  );
+                                default:
+                                  return (
+                                    <TextField
+                                      fullWidth
+                                      size="small"
+                                      value={options[option.name]}
+                                      onChange={(event) => {
+                                        onChangePluginOption(
+                                          option.name,
+                                          event.target.value
+                                        );
+                                      }}
+                                      placeholder="Default Value"
+                                    />
+                                  );
+                              }
+                            })()}
                           </TableCell>
                         </TableRow>
                       ))}
@@ -247,7 +338,7 @@ function TargetEditor(args: Args) {
         if (enableCustomOptions && plugin.options.length > 0) {
           setDialogPluginOptionsOpen(true);
         } else {
-          const options: Record<string, string> = {};
+          const options: Record<string, boolean | number | string> = {};
           plugin.options.forEach((option) => {
             options[option.name] = option.defaultValue;
           });

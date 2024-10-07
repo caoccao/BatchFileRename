@@ -18,7 +18,7 @@
 use once_cell::sync::Lazy;
 use std::include_str;
 
-use crate::config::{ConfigPlugin, ConfigPluginOption};
+use crate::config::{ConfigPlugin, ConfigPluginOption, ConfigPluginOptionBoolean, ConfigPluginOptionString};
 
 const PLUGIN_START: &str = "\n  // Plugin Start\n";
 const PLUGIN_END: &str = "\n  // Plugin End\n";
@@ -34,38 +34,41 @@ fn get_built_in_plugins() -> Vec<ConfigPlugin> {
           .to_string(),
       id: "4eec0c65-8267-4824-a8c0-1851b9858a81".to_string(),
       name: "Dot.Case".to_string(),
-      options: vec![ConfigPluginOption {
-        default_value: ".".to_string(),
-        name: "separator".to_string(),
-      }],
+      options: vec![
+        ConfigPluginOption::String(ConfigPluginOptionString {
+          default_value: ".".to_string(),
+          name: "separator".to_string(),
+        })],
     },
     ConfigPlugin {
       code: normalize_code(include_str!("../../scripts/js/plugin-to-lower-case.js")),
       description: "Convert all characters of the file name to lowercase.".to_string(),
       id: "7c857ca3-d26e-45bb-adf7-a1800f3691b1".to_string(),
       name: "To lower case".to_string(),
-      options: vec![ConfigPluginOption {
-        default_value: "true".to_string(),
-        name: "includeName".to_string(),
-      },
-      ConfigPluginOption {
-        default_value: "false".to_string(),
-        name: "includeExtension".to_string(),
-      }],
+      options: vec![
+        ConfigPluginOption::Boolean(ConfigPluginOptionBoolean  {
+          default_value: true,
+          name: "includeName".to_string(),
+        }),
+        ConfigPluginOption::Boolean(ConfigPluginOptionBoolean {
+          default_value: false,
+          name: "includeExtension".to_string(),
+        })],
     },
     ConfigPlugin {
       code: normalize_code(include_str!("../../scripts/js/plugin-to-upper-case.js")),
       description: "Convert all characters of the file name to lowercase.".to_string(),
       id: "afa82b1a-43de-439e-9f47-b6a666e40511".to_string(),
       name: "To UPPER CASE".to_string(),
-      options: vec![ConfigPluginOption {
-        default_value: "true".to_string(),
-        name: "includeName".to_string(),
-      },
-      ConfigPluginOption {
-        default_value: "false".to_string(),
-        name: "includeExtension".to_string(),
-      }],
+      options: vec![
+        ConfigPluginOption::Boolean(ConfigPluginOptionBoolean {
+          default_value: true,
+          name: "includeName".to_string(),
+        }),
+        ConfigPluginOption::Boolean(ConfigPluginOptionBoolean {
+          default_value: false,
+          name: "includeExtension".to_string(),
+        })],
     },
   ]
 }

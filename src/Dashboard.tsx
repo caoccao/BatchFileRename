@@ -157,6 +157,13 @@ function Dashboard(args: Args) {
               onChange={onChangeDepth}
               size="small"
               sx={{ width: "70px" }}
+              slotProps={{
+                htmlInput: {
+                  style: {
+                    textAlign: "right",
+                  },
+                },
+              }}
             />
           </Tooltip>
           <Tooltip

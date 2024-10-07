@@ -113,7 +113,37 @@ pub struct ConfigPlugin {
 }
 
 #[derive(Debug, Clone, Deserialize, Serialize)]
-pub struct ConfigPluginOption {
+#[serde(tag = "type")]
+pub enum ConfigPluginOption {
+  Boolean(ConfigPluginOptionBoolean),
+  Double(ConfigPluginOptionDouble),
+  Integer(ConfigPluginOptionInteger),
+  String(ConfigPluginOptionString),
+}
+
+#[derive(Debug, Clone, Deserialize, Serialize)]
+pub struct ConfigPluginOptionBoolean {
+  #[serde(rename = "defaultValue")]
+  pub default_value: bool,
+  pub name: String,
+}
+
+#[derive(Debug, Clone, Deserialize, Serialize)]
+pub struct ConfigPluginOptionDouble {
+  #[serde(rename = "defaultValue")]
+  pub default_value: f64,
+  pub name: String,
+}
+
+#[derive(Debug, Clone, Deserialize, Serialize)]
+pub struct ConfigPluginOptionInteger {
+  #[serde(rename = "defaultValue")]
+  pub default_value: i32,
+  pub name: String,
+}
+
+#[derive(Debug, Clone, Deserialize, Serialize)]
+pub struct ConfigPluginOptionString {
   #[serde(rename = "defaultValue")]
   pub default_value: String,
   pub name: String,
