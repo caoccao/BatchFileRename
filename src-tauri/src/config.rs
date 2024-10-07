@@ -70,7 +70,7 @@ impl Config {
 
   fn get_path_buf() -> PathBuf {
     let mut config_path_buf = std::env::current_exe().unwrap().parent().unwrap().to_path_buf();
-    config_path_buf.push("BatchFileRename.json");
+    config_path_buf.push("batch-file-rename.json");
     config_path_buf
   }
 
