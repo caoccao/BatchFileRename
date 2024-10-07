@@ -98,20 +98,20 @@ export function dotCase($args) {
         .filter((word) => word.length > 0)
         .map((word) => {
           const match = word.match(/^[a-z]+/i);
-          if (isFirstWord && match) {
-            isFirstWord = false;
-            return word[0].toUpperCase() + word.substring(1);
-          } else {
-            if (match) {
+          if (match) {
+            if (isFirstWord) {
+              isFirstWord = false;
+              return word[0].toUpperCase() + word.substring(1);
+            } else {
               const lowerCasedWord = match[0].toLowerCase();
               if (ignoredUncapitalizedWordSet.has(lowerCasedWord)) {
                 return lowerCasedWord + word.substring(lowerCasedWord.length);
               } else if (word[0].toLowerCase() === word[0]) {
                 return word[0].toUpperCase() + word.substring(1);
               }
-            } else if (specialWordReplacementMap.has(word)) {
-              return specialWordReplacementMap.get(word);
             }
+          } else if (specialWordReplacementMap.has(word)) {
+            return specialWordReplacementMap.get(word);
           }
           return word;
         })
