@@ -18,7 +18,7 @@
 use once_cell::sync::Lazy;
 use std::include_str;
 
-use crate::config::{ConfigPlugin, ConfigPluginOption, ConfigPluginOptionBoolean, ConfigPluginOptionString};
+use crate::config::{ConfigPlugin, ConfigPluginOption, ConfigPluginOptionBoolean, ConfigPluginOptionInteger, ConfigPluginOptionString};
 
 const PLUGIN_START: &str = "\n  // Plugin Start\n";
 const PLUGIN_END: &str = "\n  // Plugin End\n";
@@ -38,7 +38,8 @@ fn get_built_in_plugins() -> Vec<ConfigPlugin> {
         ConfigPluginOption::String(ConfigPluginOptionString {
           default_value: ".".to_string(),
           name: "separator".to_string(),
-        })],
+        }),
+      ],
     },
     ConfigPlugin {
       code: normalize_code(include_str!("../../scripts/js/plugin-to-lower-case.js")),
@@ -53,7 +54,40 @@ fn get_built_in_plugins() -> Vec<ConfigPlugin> {
         ConfigPluginOption::Boolean(ConfigPluginOptionBoolean {
           default_value: false,
           name: "includeExtension".to_string(),
-        })],
+        }),
+      ],
+    },
+    ConfigPlugin {
+      code: normalize_code(include_str!("../../scripts/js/plugin-to-sequence.js")),
+      description: "Convert the file name to a sequence with prefix and suffix.".to_string(),
+      id: "2dd17cfc-ecb3-4aad-bcbb-c8f59cf3dfe3".to_string(),
+      name: "To Sequence".to_string(),
+      options: vec![
+        ConfigPluginOption::String(ConfigPluginOptionString  {
+          default_value: "".to_string(),
+          name: "prefix".to_string(),
+        }),
+        ConfigPluginOption::String(ConfigPluginOptionString  {
+          default_value: "".to_string(),
+          name: "suffix".to_string(),
+        }),
+        ConfigPluginOption::Integer(ConfigPluginOptionInteger  {
+          default_value: 1,
+          name: "startAt".to_string(),
+        }),
+        ConfigPluginOption::Integer(ConfigPluginOptionInteger  {
+          default_value: 1,
+          name: "stepBy".to_string(),
+        }),
+        ConfigPluginOption::Integer(ConfigPluginOptionInteger  {
+          default_value: 2,
+          name: "padStart".to_string(),
+        }),
+        ConfigPluginOption::String(ConfigPluginOptionString  {
+          default_value: "0".to_string(),
+          name: "padString".to_string(),
+        }),
+      ],
     },
     ConfigPlugin {
       code: normalize_code(include_str!("../../scripts/js/plugin-to-upper-case.js")),
@@ -68,7 +102,8 @@ fn get_built_in_plugins() -> Vec<ConfigPlugin> {
         ConfigPluginOption::Boolean(ConfigPluginOptionBoolean {
           default_value: false,
           name: "includeExtension".to_string(),
-        })],
+        }),
+      ],
     },
   ]
 }
