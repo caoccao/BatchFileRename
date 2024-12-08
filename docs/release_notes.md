@@ -2,7 +2,8 @@
 
 ## 0.2.0
 
-- Upgraded tauri to v2
+- Upgraded tauri to `v2`
+- Upgraded rust toolchain to `v1.82.0`
 - Added plugin option type
   - Boolean
   - Double
