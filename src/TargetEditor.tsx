@@ -15,7 +15,7 @@
  *   limitations under the License.
  */
 
-import { writeText } from "@tauri-apps/plugin-clipboard-manager";
+import { readText, writeText } from "@tauri-apps/plugin-clipboard-manager";
 
 import React from "react";
 import {
@@ -49,6 +49,7 @@ import {
 import {
   ArrowDropDown as ArrowDropDownIcon,
   ContentCopyOutlined as ContentCopyOutlinedIcon,
+  ContentPasteOutlined as ContentPasteOutlinedIcon,
   DisabledByDefaultOutlined as DisabledByDefaultOutlinedIcon,
   SaveOutlined as SaveOutlinedIcon,
   SlideshowOutlined as SlideshowOutlinedIcon,
@@ -375,6 +376,14 @@ function TargetEditor(args: Args) {
     }
   }
 
+  function onClickPaste() {
+    if (monacoEditor) {
+      readText().then((text) => {
+        monacoEditor.setValue(text);
+      });
+    }
+  }
+
   function onClickPluginMenu(
     _event: React.MouseEvent<HTMLButtonElement, MouseEvent>
   ): void {
@@ -455,6 +464,11 @@ function TargetEditor(args: Args) {
             <Tooltip arrow title="Copy">
               <Button variant="outlined" size="small" onClick={onClickCopy}>
                 <ContentCopyOutlinedIcon fontSize="small" />
+              </Button>
+            </Tooltip>
+            <Tooltip arrow title="Paste">
+              <Button variant="outlined" size="small" onClick={onClickPaste}>
+                <ContentPasteOutlinedIcon fontSize="small" />
               </Button>
             </Tooltip>
             <Tooltip arrow title="Save">

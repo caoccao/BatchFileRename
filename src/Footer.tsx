@@ -27,7 +27,7 @@ function Footer() {
           </Link>
         </Typography>
         <Typography variant="body2" sx={{ margin: "0.5em" }}>
-          © Copyright 2024
+          © Copyright 2024-2025
           <Link
             href="https://github.com/caoccao"
             target="_blank"
